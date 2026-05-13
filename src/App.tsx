@@ -1413,13 +1413,14 @@ export default function App() {
     } else if (currentQuestion.gridData) {
       const data = currentQuestion.gridData;
       const emptyCells = data.cells.filter((c) => !c.isGiven);
-      const allFilled = emptyCells.every(
-        (c) => multiInputs[c.id] && multiInputs[c.id] !== ""
-      );
-      if (allFilled)
-        isCorrect = emptyCells.every(
-          (c) => parseInt(multiInputs[c.id]) === c.val
-        );
+      
+      // ✅ ÄNDERUNG: Für den Bauplan (cube_plan) sowie alle anderen Grids gilt nun: 
+      // leere Felder ("" oder undefined) werden als "0" verstanden.
+      isCorrect = emptyCells.every((c) => {
+        const u = multiInputs[c.id];
+        const parsed = (u === "" || u === undefined) ? 0 : parseInt(u);
+        return parsed === c.val;
+      });
     } else if (currentQuestion.stepData) {
       const i = multiInputs;
       const stepData = currentQuestion.stepData;
@@ -1507,19 +1508,23 @@ export default function App() {
   ) => {
     const isActive = activeCellId === id;
     const userInput = multiInputs[id] || "";
-    const isWrong =
-      feedback === "wrong" &&
-      !isGiven &&
-      (typeof value === "number"
-        ? parseInt(userInput) !== value
-        : userInput !== value);
+    
+    // ✅ ÄNDERUNG: Vergleichen von leeren Feldern als "0", damit sie sich nicht rot färben wenn "0" richtig ist
+    let isWrong = false;
+    const parsedInput = (userInput === "" || userInput === undefined) ? 0 : parseInt(userInput);
+    
+    if (feedback === "wrong" && !isGiven) {
+      if (mode === "money_compare") {
+        const moneyVal = typeof value === "number" ? value : 0;
+        const moneyUser = Math.round(parseFloat((userInput || "0").replace(",", ".")) * 100);
+        isWrong = moneyUser !== moneyVal;
+      } else {
+        isWrong = typeof value === "number" ? parsedInput !== value : userInput !== value;
+      }
+    }
+
     const moneyVal = typeof value === "number" ? value : 0;
-    const moneyUser = Math.round(parseFloat(userInput.replace(",", ".")) * 100);
-    const isMoneyWrong =
-      feedback === "wrong" &&
-      !isGiven &&
-      mode === "money_compare" &&
-      moneyUser !== moneyVal;
+
     let baseStyle =
       customStyle || "w-14 h-14 sm:w-16 sm:h-16 border-2 rounded-xl";
     let colorStyle = isGiven
@@ -1527,7 +1532,8 @@ export default function App() {
       : isActive && feedback === "none"
       ? "bg-white border-blue-500 ring-4 ring-blue-100 scale-105 z-10"
       : "bg-white border-slate-300 hover:bg-slate-50";
-    if (isWrong || isMoneyWrong)
+      
+    if (isWrong)
       colorStyle = "bg-red-50 border-red-300 text-red-600";
     if (feedback === "correct" && !isGiven)
       colorStyle = "bg-green-50 border-green-500 text-green-700";
@@ -1557,7 +1563,7 @@ export default function App() {
               autoComplete="off"
             />
           )}
-          {(isWrong || isMoneyWrong) && (
+          {isWrong && (
             <div className="text-[10px] text-green-600 font-bold absolute -bottom-4 bg-white/80 px-1 rounded shadow-sm z-20 whitespace-nowrap">
               {mode === "money_compare"
                 ? (moneyVal / 100).toFixed(2).replace(".", ",")
@@ -2674,6 +2680,7 @@ if (mode === "menu") {
           </h1>
         </div>
 
+        {/* ✅ OFFLINE-STATUS (Menü) */}
         {isOffline ? (
           offlineReady ? (
             <div className="mb-4 rounded-xl bg-green-100 border border-green-300 text-green-900 px-4 py-2 text-sm font-bold text-center">
