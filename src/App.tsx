@@ -739,6 +739,7 @@ export default function App() {
   const [mode, setMode] = useState<GameMode>("menu");
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const currentModeInfo = getModeInfo(mode);
 
@@ -767,6 +768,30 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("mathe-trainer-history", JSON.stringify(history));
   }, [history]);
+  
+  useEffect(() => {
+    const update = () => {
+      const offlineNow = !navigator.onLine;
+      setIsOffline(offlineNow);
+
+      // Sobald einmal online: als "offline bereit" merken
+      if (!offlineNow) {
+        localStorage.setItem(OFFLINE_READY_KEY, "1");
+        setOfflineReady(true);
+      }
+    };
+
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+
+    update(); // initial
+
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
   useEffect(() => {
     if (
       mode !== "menu" &&
@@ -776,6 +801,20 @@ export default function App() {
     )
       setMode("menu");
   }, [mode, currentQuestion, isRoundOver]);
+  useEffect(() => {
+    const update = () => setIsOffline(!navigator.onLine);
+
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+
+    // initial einmal setzen (falls Safari/ iOS komisch cached)
+    update();
+
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
 
   // --- HELPER LOGIC ---
   const pickModeForCategory = (cat: Category): GameMode => {
@@ -1304,6 +1343,10 @@ export default function App() {
     setSelectedMoney((prev) => prev.filter((_, i) => i !== index));
     playSound("click", soundEnabled);
   };
+
+  const OFFLINE_READY_KEY = "mathe_offline_ready";
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineReady, setOfflineReady] = useState(() => localStorage.getItem(OFFLINE_READY_KEY) === "1");
 
   const handleNumPad = (val: string) => {
     if (feedback !== "none") return;
@@ -2630,84 +2673,99 @@ export default function App() {
   );
 
   // --- VIEWS ---
-  if (mode === "menu") {
-    return (
-      <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4 font-sans safe-area-inset">
-        <div className="bg-white p-6 rounded-3xl shadow-xl w-full max-w-3xl text-center relative">
-          <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className="absolute top-6 right-6 bg-slate-100 p-2 rounded-full shadow text-slate-400 hover:text-slate-600 transition-colors z-20"
-          >
-            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-          </button>
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="bg-yellow-400 p-2 rounded-full shadow-md rotate-12">
-              <Star className="w-8 h-8 text-white" fill="white" />
+if (mode === "menu") {
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4 font-sans safe-area-inset">
+      <div className="bg-white p-6 rounded-3xl shadow-xl w-full max-w-3xl text-center relative">
+        <button
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          className="absolute top-6 right-6 bg-slate-100 p-2 rounded-full shadow text-slate-400 hover:text-slate-600 transition-colors z-20"
+        >
+          {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+        </button>
+
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="bg-yellow-400 p-2 rounded-full shadow-md rotate-12">
+            <Star className="w-8 h-8 text-white" fill="white" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            Mathe Profi
+          </h1>
+        </div>
+
+        {/* ✅ OFFLINE-STATUS (Menü) */}
+        {isOffline ? (
+          offlineReady ? (
+            <div className="mb-4 rounded-xl bg-green-100 border border-green-300 text-green-900 px-4 py-2 text-sm font-bold text-center">
+              ✅ Offline verfügbar
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-              Mathe Profi
-            </h1>
-          </div>
-          <div className="overflow-y-auto px-1 max-h-[75vh]">
-            <CategorySection
-              title="Rechnen & Knobeln"
-              cat="calc"
-              modes={[
-                "addition_1000",
-                "subtraction_1000",
-                "gap_add",
-                "gap_sub",
-                "triangle_add",
-                "multiplication",
-                "division",
-                "division_remainder",
-                "inverse_calc",
-                "addition",
-                "subtraction",
-                "pyramid",
-                "calc_table",
-                "fact_family",
-                "triangle",
-                "calc_wheel",
-                "estimation",
-              ]}
-              onStart={startGame}
-            />
-            <CategorySection
-              title="Zahlenraum & Orientierung"
-              cat="space"
-              modes={[
-                "rounding",
-                "place_value",
-                "neighbors",
-                "number_line",
-                "sequences",
-                "chain",
-                "sorting",
-                "arrows",
-                "symbols",
-                "shapes",
-              ]}
-              onStart={startGame}
-            />
-            <CategorySection
-              title="Geld & Sachaufgaben"
-              cat="money"
-              modes={[
-                "money_count",
-                "money_compare",
-                "money_calc",
-                "money_pay",
-                "shopping",
-                "word_problem",
-              ]}
-              onStart={startGame}
-            />
-          </div>
+          ) : (
+            <div className="mb-4 rounded-xl bg-red-100 border border-red-300 text-red-900 px-4 py-2 text-sm font-bold text-center">
+              ❌ Noch nicht offline bereit – bitte einmal mit Internet öffnen
+            </div>
+          )
+        ) : null}
+
+        <div className="overflow-y-auto px-1 max-h-[75vh]">
+          <CategorySection
+            title="Rechnen & Knobeln"
+            cat="calc"
+            modes={[
+              "addition_1000",
+              "subtraction_1000",
+              "gap_add",
+              "gap_sub",
+              "triangle_add",
+              "multiplication",
+              "division",
+              "division_remainder",
+              "inverse_calc",
+              "addition",
+              "subtraction",
+              "pyramid",
+              "calc_table",
+              "fact_family",
+              "triangle",
+              "calc_wheel",
+              "estimation",
+            ]}
+            onStart={startGame}
+          />
+          <CategorySection
+            title="Zahlenraum & Orientierung"
+            cat="space"
+            modes={[
+              "rounding",
+              "place_value",
+              "neighbors",
+              "number_line",
+              "sequences",
+              "chain",
+              "sorting",
+              "arrows",
+              "symbols",
+              "shapes",
+            ]}
+            onStart={startGame}
+          />
+          <CategorySection
+            title="Geld & Sachaufgaben"
+            cat="money"
+            modes={[
+              "money_count",
+              "money_compare",
+              "money_calc",
+              "money_pay",
+              "shopping",
+              "word_problem",
+            ]}
+            onStart={startGame}
+          />
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (mode === "history") {
     return <div>History Placeholder</div>;
