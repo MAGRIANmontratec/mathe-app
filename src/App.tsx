@@ -425,39 +425,88 @@ const PerfectScoreAnimation = () => {
   );
 };
 
-const Coin = ({ value, size = "md", onClick, selected }: { value: number; size?: "sm" | "md"; onClick?: () => void; selected?: boolean; }) => {
-  let sizeClass = size === "sm" ? "w-8 h-8 text-[10px]" : "w-10 h-10 sm:w-14 sm:h-14 text-sm sm:text-base";
-  let bg = "bg-amber-700"; let text = "text-white"; let border = "border-amber-900"; let content = `${value}`;
+const Coin = ({
+  value,
+  size = "md",
+  onClick,
+  selected,
+}: {
+  value: number;
+  size?: "sm" | "md";
+  onClick?: () => void;
+  selected?: boolean;
+}) => {
+  let sizeClass =
+    size === "sm"
+      ? "w-8 h-8 text-[10px]"
+      : "w-10 h-10 sm:w-14 sm:h-14 text-sm sm:text-base";
+  let bg = "bg-amber-700";
+  let text = "text-white";
+  let border = "border-amber-900";
+  let content = `${value}`;
   let unit = <span className="opacity-80 ml-0.5">ct</span>;
   if (value >= 10 && value <= 50) {
-    bg = "bg-yellow-500"; text = "text-yellow-900"; border = "border-yellow-700";
+    bg = "bg-yellow-500";
+    text = "text-yellow-900";
+    border = "border-yellow-700";
     if (value === 50 && size !== "sm") sizeClass = "w-12 h-12 sm:w-16 sm:h-16";
   } else if (value >= 100) {
-    bg = "bg-slate-300 ring-2 ring-yellow-500"; text = "text-slate-800"; border = "border-slate-500";
+    bg = "bg-slate-300 ring-2 ring-yellow-500";
+    text = "text-slate-800";
+    border = "border-slate-500";
     sizeClass = size === "sm" ? "w-10 h-10" : "w-12 h-12 sm:w-16 sm:h-16";
-    content = value === 100 ? "1" : "2"; unit = <span className="ml-0.5">€</span>;
+    content = value === 100 ? "1" : "2";
+    unit = <span className="ml-0.5">€</span>;
   }
   return (
-    <div onClick={onClick} className={`${sizeClass} ${bg} rounded-full flex items-center justify-center font-bold shadow-md border-b-2 sm:border-b-4 ${border} ${text} shrink-0 ${onClick ? "cursor-pointer active:scale-95" : ""} ${selected ? "ring-4 ring-blue-400 scale-110" : ""}`}>
-      {content}{unit}
+    <div
+      onClick={onClick}
+      className={`${sizeClass} ${bg} rounded-full flex items-center justify-center font-bold shadow-md border-b-2 sm:border-b-4 ${border} ${text} shrink-0 ${
+        onClick ? "cursor-pointer active:scale-95" : ""
+      } ${selected ? "ring-4 ring-blue-400 scale-110" : ""}`}
+    >
+      {content}
+      {unit}
     </div>
   );
 };
 
-const Bill = ({ value, size = "md", onClick, selected }: { value: number; size?: "sm" | "md"; onClick?: () => void; selected?: boolean; }) => {
+const Bill = ({
+  value,
+  size = "md",
+  onClick,
+  selected,
+}: {
+  value: number;
+  size?: "sm" | "md";
+  onClick?: () => void;
+  selected?: boolean;
+}) => {
   let color = "bg-slate-400";
   if (value === 5) color = "bg-neutral-400 text-neutral-800 border-neutral-500";
   if (value === 10) color = "bg-red-400 text-red-900 border-red-600";
   if (value === 20) color = "bg-blue-400 text-blue-900 border-blue-600";
   if (value === 50) color = "bg-orange-400 text-orange-900 border-orange-600";
-  const dim = size === "sm" ? "w-16 h-8 text-sm" : "w-24 h-12 sm:w-32 sm:h-16 text-lg sm:text-2xl";
+  const dim =
+    size === "sm"
+      ? "w-16 h-8 text-sm"
+      : "w-24 h-12 sm:w-32 sm:h-16 text-lg sm:text-2xl";
   return (
-    <div onClick={onClick} className={`${color} ${dim} rounded-sm border-b-2 sm:border-b-4 shadow-lg flex items-center justify-between px-2 sm:px-3 font-bold relative overflow-hidden transform hover:-rotate-1 transition-transform ${onClick ? "cursor-pointer active:scale-95" : ""} ${selected ? "ring-4 ring-blue-400 scale-105" : ""}`}>
+    <div
+      onClick={onClick}
+      className={`${color} ${dim} rounded-sm border-b-2 sm:border-b-4 shadow-lg flex items-center justify-between px-2 sm:px-3 font-bold relative overflow-hidden transform hover:-rotate-1 transition-transform ${
+        onClick ? "cursor-pointer active:scale-95" : ""
+      } ${selected ? "ring-4 ring-blue-400 scale-105" : ""}`}
+    >
       <div className="flex flex-col leading-none">
-        <span className="text-[6px] sm:text-[8px] opacity-70 uppercase tracking-widest">Euro</span>
+        <span className="text-[6px] sm:text-[8px] opacity-70 uppercase tracking-widest">
+          Euro
+        </span>
         <span>{value}</span>
       </div>
-      <div className="text-xl sm:text-4xl opacity-20 absolute right-2 top-1">€</div>
+      <div className="text-xl sm:text-4xl opacity-20 absolute right-2 top-1">
+        €
+      </div>
     </div>
   );
 };
@@ -477,7 +526,10 @@ const ScratchPad = ({ clearTrigger }: { clearTrigger: number }) => {
       if (parent) {
         canvas.width = parent.clientWidth;
         canvas.height = parent.clientHeight;
-        ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 3; ctx.strokeStyle = color;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = color;
       }
     };
     resize();
@@ -493,47 +545,94 @@ const ScratchPad = ({ clearTrigger }: { clearTrigger: number }) => {
     }
   }, [clearTrigger]);
 
-  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => { setIsDrawing(true); draw(e); };
-  const stopDrawing = () => { setIsDrawing(false); const canvas = canvasRef.current; const ctx = canvas?.getContext("2d"); if (ctx) ctx.beginPath(); };
+  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDrawing(true);
+    draw(e);
+  };
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (ctx) ctx.beginPath();
+  };
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDrawing) return;
-    const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext("2d"); if (!ctx) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     const rect = canvas.getBoundingClientRect();
     let clientX, clientY;
-    if ("touches" in e) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
-    else { clientX = (e as React.MouseEvent).clientX; clientY = (e as React.MouseEvent).clientY; }
-    const x = clientX - rect.left; const y = clientY - rect.top;
-    ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = (e as React.MouseEvent).clientX;
+      clientY = (e as React.MouseEvent).clientY;
+    }
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
   };
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    if (canvas) { const ctx = canvas.getContext("2d"); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   };
 
   return (
     <div className="flex flex-col h-full bg-yellow-50 rounded-3xl shadow-inner border-4 border-yellow-200 relative overflow-hidden">
       <div className="absolute top-2 left-2 right-2 flex justify-between items-center z-10 pointer-events-none">
-        <span className="text-yellow-800/30 font-bold uppercase text-xs tracking-widest ml-2 pointer-events-auto">Notizblock</span>
-        <button onClick={clearCanvas} className="p-1.5 bg-white/80 rounded-full shadow text-red-400 hover:text-red-600 transition-colors pointer-events-auto">
+        <span className="text-yellow-800/30 font-bold uppercase text-xs tracking-widest ml-2 pointer-events-auto">
+          Notizblock
+        </span>
+        <button
+          onClick={clearCanvas}
+          className="p-1.5 bg-white/80 rounded-full shadow text-red-400 hover:text-red-600 transition-colors pointer-events-auto"
+        >
           <Trash2 size={16} />
         </button>
       </div>
       <canvas
         ref={canvasRef}
         className="w-full h-full touch-none cursor-crosshair"
-        onMouseDown={startDrawing} onMouseUp={stopDrawing} onMouseMove={draw} onMouseLeave={stopDrawing}
-        onTouchStart={startDrawing} onTouchEnd={stopDrawing} onTouchMove={draw}
+        onMouseDown={startDrawing}
+        onMouseUp={stopDrawing}
+        onMouseMove={draw}
+        onMouseLeave={stopDrawing}
+        onTouchStart={startDrawing}
+        onTouchEnd={stopDrawing}
+        onTouchMove={draw}
       />
     </div>
   );
 };
 
-const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes: GameMode[]; cat: Category; onStart: (m: GameMode | Category) => void; }) => (
+const CategorySection = ({
+  title,
+  modes,
+  cat,
+  onStart,
+}: {
+  title: string;
+  modes: GameMode[];
+  cat: Category;
+  onStart: (m: GameMode | Category) => void;
+}) => (
   <div className="bg-slate-50 rounded-2xl p-4 mb-4">
     <div className="flex items-center justify-between mb-3">
-      <h3 className="text-slate-500 font-bold uppercase text-xs tracking-wider">{title}</h3>
-      <button onClick={() => onStart(cat)} className="text-xs bg-slate-800 text-white px-3 py-1 rounded-full font-bold shadow hover:bg-slate-700 active:scale-95 flex items-center gap-1">
+      <h3 className="text-slate-500 font-bold uppercase text-xs tracking-wider">
+        {title}
+      </h3>
+      <button
+        onClick={() => onStart(cat)}
+        className="text-xs bg-slate-800 text-white px-3 py-1 rounded-full font-bold shadow hover:bg-slate-700 active:scale-95 flex items-center gap-1"
+      >
         <Layers size={12} /> Alles mischen
       </button>
     </div>
@@ -541,10 +640,20 @@ const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes:
       {modes.map((m) => {
         const info = getModeInfo(m);
         return (
-          <button key={m} onClick={() => onStart(m)} className={`${info.color} text-white py-3 rounded-xl shadow active:scale-95 flex flex-col items-center gap-1 border-b-4 ${info.border} relative`}>
-            {info.isNew && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm animate-bounce">NEU</span>}
+          <button
+            key={m}
+            onClick={() => onStart(m)}
+            className={`${info.color} text-white py-3 rounded-xl shadow active:scale-95 flex flex-col items-center gap-1 border-b-4 ${info.border} relative`}
+          >
+            {info.isNew && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm animate-bounce">
+                NEU
+              </span>
+            )}
             <span className="text-xl">{info.icon}</span>
-            <span className="text-[10px] sm:text-xs font-bold text-center px-1 leading-tight">{info.name}</span>
+            <span className="text-[10px] sm:text-xs font-bold text-center px-1 leading-tight">
+              {info.name}
+            </span>
           </button>
         );
       })}
@@ -552,24 +661,32 @@ const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes:
   </div>
 );
 
-// Schrägbild-Rendering für Würfelgebäude
+// Schrägbild-Rendering für Würfelgebäude (Kabinettprojektion)
 const IsometricCubes = ({ grid }: { grid: number[][] }) => {
-  const size = 28; const depthX = 14; const depthY = 14;
-  const rows = grid.length; const cols = grid[0].length;
+  const size = 28;
+  const depthX = 14;
+  const depthY = 14;
+  const rows = grid.length;
+  const cols = grid[0].length;
+  
   const cubes: {r: number, c: number, z: number}[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const h = grid[r][c];
-      for (let z = 0; z < h; z++) cubes.push({ r, c, z });
+      for (let z = 0; z < h; z++) {
+        cubes.push({ r, c, z });
+      }
     }
   }
+  
   return (
-    <svg viewBox="-30 -160 240 200" className="w-56 h-56 sm:w-72 sm:h-72 mx-auto overflow-visible drop-shadow-md">
+    <svg viewBox="-20 -150 200 180" className="w-48 h-48 sm:w-64 sm:h-64 mx-auto overflow-visible drop-shadow-md">
       {cubes.map((cube, i) => {
         const { r, c, z } = cube;
         const d = rows - 1 - r; 
         const x = c * size + d * depthX;
         const y = -z * size - d * depthY;
+        
         return (
           <g key={i} transform={`translate(${x}, ${y})`}>
             <polygon points={`0,0 ${depthX},${-depthY} ${size+depthX},${-depthY} ${size},0`} fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" strokeLinejoin="round" />
@@ -582,19 +699,24 @@ const IsometricCubes = ({ grid }: { grid: number[][] }) => {
   );
 };
 
-// Durchsichtige geometrische Körper
+// Durchsichtige geometrische Körper (Drahtgitter / Blueprint)
 const ShapePreview = ({ type }: { type: string }) => {
   let content = null;
-  const stroke = "#3b82f6"; const strokeBack = "#93c5fd"; const fill = "rgba(239, 246, 255, 0.4)"; 
+  const stroke = "#3b82f6";
+  const strokeBack = "#93c5fd"; 
+  const fill = "rgba(239, 246, 255, 0.4)"; 
   
   if (type === "cube" || type === "cuboid") {
-     const h = type === "cube" ? 60 : 40; const w = type === "cube" ? 60 : 90; const d = type === "cube" ? 30 : 40; 
+     const h = type === "cube" ? 60 : 40;
+     const w = type === "cube" ? 60 : 90;
+     const d = type === "cube" ? 30 : 40; 
      content = (
        <g transform={`translate(${type === "cube" ? 25 : 10}, ${type === "cube" ? 40 : 50})`}>
          <polyline points={`0,0 ${d},${-d} ${w+d},${-d}`} fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={-d} x2={d} y2={h-d} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={h-d} x2={0} y2={h} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={h-d} x2={w+d} y2={h-d} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         
          <polygon points={`0,0 ${w},0 ${w},${h} 0,${h}`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
          <polygon points={`0,0 ${d},${-d} ${w+d},${-d} ${w},0`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
          <polygon points={`${w},0 ${w+d},${-d} ${w+d},${h-d} ${w},${h}`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
@@ -714,14 +836,17 @@ export default function App() {
     const update = () => {
       const offlineNow = !navigator.onLine;
       setIsOffline(offlineNow);
+
       if (!offlineNow) {
         localStorage.setItem(OFFLINE_READY_KEY, "1");
         setOfflineReady(true);
       }
     };
+
     window.addEventListener("online", update);
     window.addEventListener("offline", update);
     update();
+
     return () => {
       window.removeEventListener("online", update);
       window.removeEventListener("offline", update);
@@ -729,28 +854,58 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (mode !== "menu" && mode !== "history" && !isRoundOver && !currentQuestion)
+    if (
+      mode !== "menu" &&
+      mode !== "history" &&
+      !isRoundOver &&
+      !currentQuestion
+    )
       setMode("menu");
   }, [mode, currentQuestion, isRoundOver]);
 
   // --- HELPER LOGIC ---
   const pickModeForCategory = (cat: Category): GameMode => {
     const calcModes: GameMode[] = [
-      "multiplication", "division", "division_remainder", "inverse_calc",
-      "addition", "subtraction", "addition_1000", "subtraction_1000",
-      "pyramid", "calc_table", "estimation", "gap_add", "gap_sub",
+      "multiplication",
+      "division",
+      "division_remainder",
+      "inverse_calc",
+      "addition",
+      "subtraction",
+      "addition_1000",
+      "subtraction_1000",
+      "pyramid",
+      "calc_table",
+      "estimation",
+      "gap_add",
+      "gap_sub",
     ];
     const spaceModes: GameMode[] = [
-      "rounding", "number_line", "neighbors", "sequences", "chain",
-      "sorting", "arrows", "symbols", "shapes", "place_value",
+      "rounding",
+      "number_line",
+      "neighbors",
+      "sequences",
+      "chain",
+      "sorting",
+      "arrows",
+      "symbols",
+      "shapes",
+      "place_value",
     ];
     const moneyModes: GameMode[] = [
-      "money_count", "money_calc", "money_compare", "shopping",
-      "word_problem", "money_pay",
+      "money_count",
+      "money_calc",
+      "money_compare",
+      "shopping",
+      "word_problem",
+      "money_pay",
     ];
     const grade3Modes: GameMode[] = [
-      "cube_buildings", "geometry_shapes", "units_length",
-      "units_weight", "word_problem_units",
+      "cube_buildings",
+      "geometry_shapes",
+      "units_length",
+      "units_weight",
+      "word_problem_units",
     ];
     let pool: GameMode[] = [];
     if (cat === "calc") pool = calcModes;
@@ -931,23 +1086,42 @@ export default function App() {
         const g: number[][] = Array(rows).fill(0).map(() => Array(cols).fill(0));
         const cells: GridCell[] = [];
 
-        // GENERIERUNG: Von vorne nach hinten (rows-1 down to 0) aufbauen, um verdeckte Würfel zu vermeiden
-        for (let c = 0; c < cols; c++) {
-          let maxHFront = 0;
-          for (let r = rows - 1; r >= 0; r--) {
-            let h = 0;
-            if (r === rows - 1) { 
-              h = rand(0, Math.min(maxBuildingHeight, 2)); // Vorne nicht zu hoch starten
-            } else {
-              if (maxHFront > 0 && rand(0, 1) === 0) {
-                h = 0; // Sichtbare Lücke
-              } else {
-                let minH = Math.max(1, maxHFront);
-                h = rand(minH, Math.min(minH + 1, maxBuildingHeight));
+        // NEUE GENERIERUNG: Berechnet echte Sichtbarkeit im SVG-Renderer, um versteckte Türme strikt auf 0 zu setzen
+        for (let r = rows - 1; r >= 0; r--) {
+          for (let c = cols - 1; c >= 0; c--) {
+            let minH = 0;
+            // Finde heraus, wie hoch ein Block mindestens sein muss, um nicht durch Blöcke davor verdeckt zu werden
+            for (let rf = r + 1; rf < rows; rf++) {
+              for (let cf = 0; cf < cols; cf++) {
+                let delta_r = rf - r;
+                let delta_c = cf - c;
+                // Prüfen, ob sich der Block (rf, cf) im 2D-Rendering visuell mit (r, c) überschneidet
+                if (-2 < 2 * delta_c - delta_r && 2 * delta_c - delta_r < 2) {
+                  let reqH = g[rf][cf] - Math.floor((delta_r - 1) / 2);
+                  if (reqH > minH) minH = reqH;
+                }
               }
             }
-            g[r][c] = h;
-            maxHFront = Math.max(maxHFront, h);
+
+            let choices = [0]; // 0 ist immer erlaubt (leeres, flaches Feld)
+            let localMax = maxBuildingHeight;
+            
+            // Vordere Reihen tendenziell etwas flacher halten, damit man hinten überhaupt etwas sieht
+            if (r === rows - 1) localMax = Math.min(maxBuildingHeight, 2);
+            else if (r === rows - 2) localMax = Math.min(maxBuildingHeight, 3);
+
+            let startH = Math.max(1, minH);
+            for (let h = startH; h <= localMax; h++) {
+              choices.push(h); // Füge nur noch Höhen hinzu, die TATSÄCHLICH für das Auge sichtbar herausragen!
+            }
+            
+            // Zufällige Auswahl - wenn unsichtbar, dann ist die Auswahl erzwungen [0]
+            if (choices.length > 1 && rand(0, 100) > 30) {
+               let validHeights = choices.slice(1);
+               g[r][c] = validHeights[rand(0, validHeights.length - 1)];
+            } else {
+               g[r][c] = choices[rand(0, choices.length - 1)];
+            }
           }
         }
 
