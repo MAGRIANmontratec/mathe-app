@@ -217,7 +217,7 @@ const getModeInfo = (m: string): ModeInfo => {
     case "shopping": return { name: "Einkaufen", icon: <ShoppingBag size={20} />, color: "bg-rose-500", border: "border-rose-700" };
     case "word_problem": return { name: "Lesen", icon: <BookOpen size={20} />, color: "bg-amber-500", border: "border-amber-700" };
     
-    // KATEGORIEN KLASSE 3 (Erweitert)
+    // KATEGORIEN KLASSE 3
     case "cube_buildings": return { name: "Baupläne", icon: <Box size={20} />, color: "bg-orange-600", border: "border-orange-800" };
     case "geometry_shapes": return { name: "Körper", icon: "🧊", color: "bg-indigo-600", border: "border-indigo-800" };
     case "geometry_riddles": return { name: "Rätsel", icon: <Brain size={20} />, color: "bg-purple-600", border: "border-purple-800", isNew: true };
@@ -245,38 +245,165 @@ const PerfectScoreAnimation = () => {
     <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
       <style>
         {`
-          @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
-          @keyframes pop { 0% { transform: scale(0); opacity: 1; } 50% { opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-          @keyframes floatUp { 0% { transform: translateY(110vh) translateX(0); opacity: 1; } 100% { transform: translateY(-10vh) translateX(30px); opacity: 0; } }
+          @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+          }
+          @keyframes pop {
+            0% { transform: scale(0); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+          }
+          @keyframes floatUp {
+            0% { transform: translateY(110vh) translateX(0); opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+          }
         `}
       </style>
-      {effect === "confetti" && Array.from({ length: 80 }).map((_, i) => ( <div key={`confetti-${i}`} className="absolute w-3 h-3 rounded-sm" style={{ left: `${Math.random() * 100}%`, top: '-5%', backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'][Math.floor(Math.random() * 6)], animation: `fall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s infinite` }} /> ))}
-      {effect === "fireworks" && Array.from({ length: 12 }).map((_, i) => ( <div key={`fireworks-${i}`} className="absolute" style={{ left: `${10 + Math.random() * 80}%`, top: `${10 + Math.random() * 60}%`, animation: `pop ${1 + Math.random()}s ease-out ${Math.random() * 2}s infinite` }}> <div className="w-16 h-16 rounded-full border-4 border-dashed" style={{ borderColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][Math.floor(Math.random() * 5)] }} /> </div> ))}
-      {effect === "balloons" && Array.from({ length: 25 }).map((_, i) => ( <div key={`balloons-${i}`} className="absolute text-5xl drop-shadow-md" style={{ left: `${Math.random() * 100}%`, animation: `floatUp ${4 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite` }}> {['🎈', '🎈', '🎈'][Math.floor(Math.random() * 3)]} </div> ))}
-      {effect === "unicorns" && Array.from({ length: 20 }).map((_, i) => ( <div key={`unicorns-${i}`} className="absolute text-5xl drop-shadow-md" style={{ left: `${Math.random() * 100}%`, animation: `floatUp ${3 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite` }}> {['🦄', '🌈', '✨', '💖'][Math.floor(Math.random() * 4)]} </div> ))}
+
+      {effect === "confetti" &&
+        Array.from({ length: 80 }).map((_, i) => (
+          <div
+            key={`confetti-${i}`}
+            className="absolute w-3 h-3 rounded-sm"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-5%',
+              backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'][Math.floor(Math.random() * 6)],
+              animation: `fall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s infinite`
+            }}
+          />
+        ))}
+
+      {effect === "fireworks" &&
+        Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={`fireworks-${i}`}
+            className="absolute"
+            style={{
+              left: `${10 + Math.random() * 80}%`,
+              top: `${10 + Math.random() * 60}%`,
+              animation: `pop ${1 + Math.random()}s ease-out ${Math.random() * 2}s infinite`
+            }}
+          >
+            <div className="w-16 h-16 rounded-full border-4 border-dashed"
+                 style={{ borderColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][Math.floor(Math.random() * 5)] }} />
+          </div>
+        ))}
+
+      {effect === "balloons" &&
+        Array.from({ length: 25 }).map((_, i) => (
+          <div
+            key={`balloons-${i}`}
+            className="absolute text-5xl drop-shadow-md"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animation: `floatUp ${4 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite`
+            }}
+          >
+            {['🎈', '🎈', '🎈'][Math.floor(Math.random() * 3)]}
+          </div>
+        ))}
+        
+      {effect === "unicorns" &&
+        Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={`unicorns-${i}`}
+            className="absolute text-5xl drop-shadow-md"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animation: `floatUp ${3 + Math.random() * 3}s ease-in-out ${Math.random() * 2}s infinite`
+            }}
+          >
+            {['🦄', '🌈', '✨', '💖'][Math.floor(Math.random() * 4)]}
+          </div>
+        ))}
     </div>
   );
 };
 
-const Coin = ({ value, size = "md", onClick, selected }: { value: number; size?: "sm" | "md"; onClick?: () => void; selected?: boolean; }) => {
-  let sizeClass = size === "sm" ? "w-8 h-8 text-[10px]" : "w-10 h-10 sm:w-14 sm:h-14 text-sm sm:text-base";
-  let bg = "bg-amber-700"; let text = "text-white"; let border = "border-amber-900"; let content = `${value}`; let unit = <span className="opacity-80 ml-0.5">ct</span>;
-  if (value >= 10 && value <= 50) { bg = "bg-yellow-500"; text = "text-yellow-900"; border = "border-yellow-700"; if (value === 50 && size !== "sm") sizeClass = "w-12 h-12 sm:w-16 sm:h-16"; } 
-  else if (value >= 100) { bg = "bg-slate-300 ring-2 ring-yellow-500"; text = "text-slate-800"; border = "border-slate-500"; sizeClass = size === "sm" ? "w-10 h-10" : "w-12 h-12 sm:w-16 sm:h-16"; content = value === 100 ? "1" : "2"; unit = <span className="ml-0.5">€</span>; }
-  return ( <div onClick={onClick} className={`${sizeClass} ${bg} rounded-full flex items-center justify-center font-bold shadow-md border-b-2 sm:border-b-4 ${border} ${text} shrink-0 ${onClick ? "cursor-pointer active:scale-95" : ""} ${selected ? "ring-4 ring-blue-400 scale-110" : ""}`}>{content}{unit}</div> );
+const Coin = ({
+  value,
+  size = "md",
+  onClick,
+  selected,
+}: {
+  value: number;
+  size?: "sm" | "md";
+  onClick?: () => void;
+  selected?: boolean;
+}) => {
+  let sizeClass =
+    size === "sm"
+      ? "w-8 h-8 text-[10px]"
+      : "w-10 h-10 sm:w-14 sm:h-14 text-sm sm:text-base";
+  let bg = "bg-amber-700";
+  let text = "text-white";
+  let border = "border-amber-900";
+  let content = `${value}`;
+  let unit = <span className="opacity-80 ml-0.5">ct</span>;
+  if (value >= 10 && value <= 50) {
+    bg = "bg-yellow-500";
+    text = "text-yellow-900";
+    border = "border-yellow-700";
+    if (value === 50 && size !== "sm") sizeClass = "w-12 h-12 sm:w-16 sm:h-16";
+  } else if (value >= 100) {
+    bg = "bg-slate-300 ring-2 ring-yellow-500";
+    text = "text-slate-800";
+    border = "border-slate-500";
+    sizeClass = size === "sm" ? "w-10 h-10" : "w-12 h-12 sm:w-16 sm:h-16";
+    content = value === 100 ? "1" : "2";
+    unit = <span className="ml-0.5">€</span>;
+  }
+  return (
+    <div
+      onClick={onClick}
+      className={`${sizeClass} ${bg} rounded-full flex items-center justify-center font-bold shadow-md border-b-2 sm:border-b-4 ${border} ${text} shrink-0 ${
+        onClick ? "cursor-pointer active:scale-95" : ""
+      } ${selected ? "ring-4 ring-blue-400 scale-110" : ""}`}
+    >
+      {content}
+      {unit}
+    </div>
+  );
 };
 
-const Bill = ({ value, size = "md", onClick, selected }: { value: number; size?: "sm" | "md"; onClick?: () => void; selected?: boolean; }) => {
+const Bill = ({
+  value,
+  size = "md",
+  onClick,
+  selected,
+}: {
+  value: number;
+  size?: "sm" | "md";
+  onClick?: () => void;
+  selected?: boolean;
+}) => {
   let color = "bg-slate-400";
   if (value === 5) color = "bg-neutral-400 text-neutral-800 border-neutral-500";
   if (value === 10) color = "bg-red-400 text-red-900 border-red-600";
   if (value === 20) color = "bg-blue-400 text-blue-900 border-blue-600";
   if (value === 50) color = "bg-orange-400 text-orange-900 border-orange-600";
-  const dim = size === "sm" ? "w-16 h-8 text-sm" : "w-24 h-12 sm:w-32 sm:h-16 text-lg sm:text-2xl";
+  const dim =
+    size === "sm"
+      ? "w-16 h-8 text-sm"
+      : "w-24 h-12 sm:w-32 sm:h-16 text-lg sm:text-2xl";
   return (
-    <div onClick={onClick} className={`${color} ${dim} rounded-sm border-b-2 sm:border-b-4 shadow-lg flex items-center justify-between px-2 sm:px-3 font-bold relative overflow-hidden transform hover:-rotate-1 transition-transform ${onClick ? "cursor-pointer active:scale-95" : ""} ${selected ? "ring-4 ring-blue-400 scale-105" : ""}`}>
-      <div className="flex flex-col leading-none"><span className="text-[6px] sm:text-[8px] opacity-70 uppercase tracking-widest">Euro</span><span>{value}</span></div>
-      <div className="text-xl sm:text-4xl opacity-20 absolute right-2 top-1">€</div>
+    <div
+      onClick={onClick}
+      className={`${color} ${dim} rounded-sm border-b-2 sm:border-b-4 shadow-lg flex items-center justify-between px-2 sm:px-3 font-bold relative overflow-hidden transform hover:-rotate-1 transition-transform ${
+        onClick ? "cursor-pointer active:scale-95" : ""
+      } ${selected ? "ring-4 ring-blue-400 scale-105" : ""}`}
+    >
+      <div className="flex flex-col leading-none">
+        <span className="text-[6px] sm:text-[8px] opacity-70 uppercase tracking-widest">
+          Euro
+        </span>
+        <span>{value}</span>
+      </div>
+      <div className="text-xl sm:text-4xl opacity-20 absolute right-2 top-1">
+        €
+      </div>
     </div>
   );
 };
@@ -287,45 +414,122 @@ const ScratchPad = ({ clearTrigger }: { clearTrigger: number }) => {
   const [color] = useState("#334155");
 
   useEffect(() => {
-    const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext("2d"); if (!ctx) return;
-    const resize = () => { const parent = canvas.parentElement; if (parent) { canvas.width = parent.clientWidth; canvas.height = parent.clientHeight; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = 3; ctx.strokeStyle = color; } };
-    resize(); window.addEventListener("resize", resize); return () => window.removeEventListener("resize", resize);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (parent) {
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = color;
+      }
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, [color]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) { const ctx = canvas.getContext("2d"); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }, [clearTrigger]);
 
-  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => { setIsDrawing(true); draw(e); };
-  const stopDrawing = () => { setIsDrawing(false); const canvas = canvasRef.current; const ctx = canvas?.getContext("2d"); if (ctx) ctx.beginPath(); };
+  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDrawing(true);
+    draw(e);
+  };
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (ctx) ctx.beginPath();
+  };
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDrawing) return;
-    const canvas = canvasRef.current; if (!canvas) return; const ctx = canvas.getContext("2d"); if (!ctx) return;
-    const rect = canvas.getBoundingClientRect(); let clientX, clientY;
-    if ("touches" in e) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } else { clientX = (e as React.MouseEvent).clientX; clientY = (e as React.MouseEvent).clientY; }
-    const x = clientX - rect.left; const y = clientY - rect.top;
-    ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    if ("touches" in e) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = (e as React.MouseEvent).clientX;
+      clientY = (e as React.MouseEvent).clientY;
+    }
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
   };
-  const clearCanvas = () => { const canvas = canvasRef.current; if (canvas) { const ctx = canvas.getContext("2d"); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); } };
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-yellow-50 rounded-3xl shadow-inner border-4 border-yellow-200 relative overflow-hidden">
       <div className="absolute top-2 left-2 right-2 flex justify-between items-center z-10 pointer-events-none">
-        <span className="text-yellow-800/30 font-bold uppercase text-xs tracking-widest ml-2 pointer-events-auto">Notizblock</span>
-        <button onClick={clearCanvas} className="p-1.5 bg-white/80 rounded-full shadow text-red-400 hover:text-red-600 transition-colors pointer-events-auto"><Trash2 size={16} /></button>
+        <span className="text-yellow-800/30 font-bold uppercase text-xs tracking-widest ml-2 pointer-events-auto">
+          Notizblock
+        </span>
+        <button
+          onClick={clearCanvas}
+          className="p-1.5 bg-white/80 rounded-full shadow text-red-400 hover:text-red-600 transition-colors pointer-events-auto"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
-      <canvas ref={canvasRef} className="w-full h-full touch-none cursor-crosshair" onMouseDown={startDrawing} onMouseUp={stopDrawing} onMouseMove={draw} onMouseLeave={stopDrawing} onTouchStart={startDrawing} onTouchEnd={stopDrawing} onTouchMove={draw} />
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full touch-none cursor-crosshair"
+        onMouseDown={startDrawing}
+        onMouseUp={stopDrawing}
+        onMouseMove={draw}
+        onMouseLeave={stopDrawing}
+        onTouchStart={startDrawing}
+        onTouchEnd={stopDrawing}
+        onTouchMove={draw}
+      />
     </div>
   );
 };
 
-const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes: GameMode[]; cat: Category; onStart: (m: GameMode | Category) => void; }) => (
-  <div className="bg-slate-50 rounded-2xl p-4 mb-4 border border-slate-200 shadow-sm">
+const CategorySection = ({
+  title,
+  modes,
+  cat,
+  onStart,
+}: {
+  title: string;
+  modes: GameMode[];
+  cat: Category;
+  onStart: (m: GameMode | Category) => void;
+}) => (
+  <div className="bg-slate-50 rounded-2xl p-4 mb-4">
     <div className="flex items-center justify-between mb-3">
-      <h3 className="text-slate-500 font-bold uppercase text-xs tracking-wider">{title}</h3>
-      <button onClick={() => onStart(cat)} className="text-xs bg-slate-800 text-white px-3 py-1 rounded-full font-bold shadow hover:bg-slate-700 active:scale-95 flex items-center gap-1">
+      <h3 className="text-slate-500 font-bold uppercase text-xs tracking-wider">
+        {title}
+      </h3>
+      <button
+        onClick={() => onStart(cat)}
+        className="text-xs bg-slate-800 text-white px-3 py-1 rounded-full font-bold shadow hover:bg-slate-700 active:scale-95 flex items-center gap-1"
+      >
         <Layers size={12} /> Alles mischen
       </button>
     </div>
@@ -333,10 +537,20 @@ const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes:
       {modes.map((m) => {
         const info = getModeInfo(m);
         return (
-          <button key={m} onClick={() => onStart(m)} className={`${info.color} text-white py-3 rounded-xl shadow active:scale-95 flex flex-col items-center gap-1 border-b-4 ${info.border} relative hover:brightness-110 transition-all`}>
-            {info.isNew && ( <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm animate-bounce">NEU</span> )}
+          <button
+            key={m}
+            onClick={() => onStart(m)}
+            className={`${info.color} text-white py-3 rounded-xl shadow active:scale-95 flex flex-col items-center gap-1 border-b-4 ${info.border} relative`}
+          >
+            {info.isNew && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm animate-bounce">
+                NEU
+              </span>
+            )}
             <span className="text-xl">{info.icon}</span>
-            <span className="text-[10px] sm:text-xs font-bold text-center px-1 leading-tight">{info.name}</span>
+            <span className="text-[10px] sm:text-xs font-bold text-center px-1 leading-tight">
+              {info.name}
+            </span>
           </button>
         );
       })}
@@ -344,15 +558,32 @@ const CategorySection = ({ title, modes, cat, onStart }: { title: string; modes:
   </div>
 );
 
-// Schrägbild-Rendering für Würfelgebäude
+// Schrägbild-Rendering für Würfelgebäude (Kabinettprojektion)
 const IsometricCubes = ({ grid }: { grid: number[][] }) => {
-  const size = 28; const depthX = 14; const depthY = 14; const rows = grid.length; const cols = grid[0].length;
+  const size = 28;
+  const depthX = 14;
+  const depthY = 14;
+  const rows = grid.length;
+  const cols = grid[0].length;
+  
   const cubes: {r: number, c: number, z: number}[] = [];
-  for (let r = 0; r < rows; r++) { for (let c = 0; c < cols; c++) { const h = grid[r][c]; for (let z = 0; z < h; z++) { cubes.push({ r, c, z }); } } }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const h = grid[r][c];
+      for (let z = 0; z < h; z++) {
+        cubes.push({ r, c, z });
+      }
+    }
+  }
+  
   return (
     <svg viewBox="-20 -150 200 180" className="w-48 h-48 sm:w-64 sm:h-64 mx-auto overflow-visible drop-shadow-md">
       {cubes.map((cube, i) => {
-        const { r, c, z } = cube; const d = rows - 1 - r; const x = c * size + d * depthX; const y = -z * size - d * depthY;
+        const { r, c, z } = cube;
+        const d = rows - 1 - r; 
+        const x = c * size + d * depthX;
+        const y = -z * size - d * depthY;
+        
         return (
           <g key={i} transform={`translate(${x}, ${y})`}>
             <polygon points={`0,0 ${depthX},${-depthY} ${size+depthX},${-depthY} ${size},0`} fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.5" strokeLinejoin="round" />
@@ -365,33 +596,75 @@ const IsometricCubes = ({ grid }: { grid: number[][] }) => {
   );
 };
 
-// Durchsichtige geometrische Körper
+// Durchsichtige geometrische Körper (Drahtgitter / Blueprint)
 const ShapePreview = ({ type }: { type: string }) => {
-  let content = null; const stroke = "#3b82f6"; const strokeBack = "#93c5fd"; const fill = "rgba(239, 246, 255, 0.4)"; 
+  let content = null;
+  const stroke = "#3b82f6";
+  const strokeBack = "#93c5fd"; 
+  const fill = "rgba(239, 246, 255, 0.4)"; 
+  
   if (type === "cube" || type === "cuboid") {
-     const h = type === "cube" ? 60 : 40; const w = type === "cube" ? 60 : 90; const d = type === "cube" ? 30 : 40; 
+     const h = type === "cube" ? 60 : 40;
+     const w = type === "cube" ? 60 : 90;
+     const d = type === "cube" ? 30 : 40; 
      content = (
        <g transform={`translate(${type === "cube" ? 25 : 10}, ${type === "cube" ? 40 : 50})`}>
          <polyline points={`0,0 ${d},${-d} ${w+d},${-d}`} fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={-d} x2={d} y2={h-d} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={h-d} x2={0} y2={h} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
          <line x1={d} y1={h-d} x2={w+d} y2={h-d} stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         
          <polygon points={`0,0 ${w},0 ${w},${h} 0,${h}`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
          <polygon points={`0,0 ${d},${-d} ${w+d},${-d} ${w},0`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
          <polygon points={`${w},0 ${w+d},${-d} ${w+d},${h-d} ${w},${h}`} fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
        </g>
      );
   } else if (type === "cylinder") {
-     content = ( <g transform="translate(45, 25)"><path d="M0,70 A40,15 0 0,1 80,70" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><path d="M0,0 L0,70 A40,15 0 0,0 80,70 L80,0 Z" fill={fill} stroke={stroke} strokeWidth="3" /><ellipse cx="40" cy="0" rx="40" ry="15" fill={fill} stroke={stroke} strokeWidth="3" /></g> );
+     content = (
+       <g transform="translate(45, 25)">
+         <path d="M0,70 A40,15 0 0,1 80,70" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <path d="M0,0 L0,70 A40,15 0 0,0 80,70 L80,0 Z" fill={fill} stroke={stroke} strokeWidth="3" />
+         <ellipse cx="40" cy="0" rx="40" ry="15" fill={fill} stroke={stroke} strokeWidth="3" />
+       </g>
+     );
   } else if (type === "pyramid") {
-     content = ( <g transform="translate(25, 95)"><polyline points="0,0 65,-20 110,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><line x1="65" y1="-20" x2="55" y2="-85" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><polyline points="0,0 45,20 110,0" fill="none" stroke={stroke} strokeWidth="3" strokeLinejoin="round" /><polygon points="0,0 45,20 55,-85" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" /><polygon points="45,20 110,0 55,-85" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" /></g> );
+     content = (
+       <g transform="translate(25, 95)">
+         <polyline points="0,0 65,-20 110,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <line x1="65" y1="-20" x2="55" y2="-85" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <polyline points="0,0 45,20 110,0" fill="none" stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+         <polygon points="0,0 45,20 55,-85" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+         <polygon points="45,20 110,0 55,-85" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+       </g>
+     );
   } else if (type === "sphere") {
-     content = ( <g transform="translate(70, 60)"><circle cx="0" cy="0" r="50" fill={fill} stroke={stroke} strokeWidth="3" /><path d="M-50,0 A50,15 0 0,1 50,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><path d="M-50,0 A50,15 0 0,0 50,0" fill="none" stroke={stroke} strokeWidth="3" /><path d="M0,-50 A15,50 0 0,1 0,50" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><path d="M0,-50 A15,50 0 0,0 0,50" fill="none" stroke={stroke} strokeWidth="3" /></g> );
+     content = (
+       <g transform="translate(70, 60)">
+         <circle cx="0" cy="0" r="50" fill={fill} stroke={stroke} strokeWidth="3" />
+         <path d="M-50,0 A50,15 0 0,1 50,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <path d="M-50,0 A50,15 0 0,0 50,0" fill="none" stroke={stroke} strokeWidth="3" />
+         <path d="M0,-50 A15,50 0 0,1 0,50" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <path d="M0,-50 A15,50 0 0,0 0,50" fill="none" stroke={stroke} strokeWidth="3" />
+       </g>
+     );
   } else if (type === "cone") {
-     content = ( <g transform="translate(30, 95)"><path d="M0,0 A40,15 0 0,1 80,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><path d="M0,0 A40,15 0 0,0 80,0 L40,-80 Z" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" /></g> );
+     content = (
+       <g transform="translate(30, 95)">
+         <path d="M0,0 A40,15 0 0,1 80,0" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <path d="M0,0 A40,15 0 0,0 80,0 L40,-80 Z" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+       </g>
+     );
   } else if (type === "prism") {
-     content = ( <g transform="translate(15, 60)"><polyline points="10,30 40,10 80,10" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><line x1="40" y1="10" x2="60" y2="-30" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" /><polygon points="10,30 50,30 30,-10" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" /><polygon points="50,30 80,10 60,-30 30,-10" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" /></g> );
+     content = (
+       <g transform="translate(15, 60)">
+         <polyline points="10,30 40,10 80,10" fill="none" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <line x1="40" y1="10" x2="60" y2="-30" stroke={strokeBack} strokeWidth="2.5" strokeDasharray="5,5" />
+         <polygon points="10,30 50,30 30,-10" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+         <polygon points="50,30 80,10 60,-30 30,-10" fill={fill} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+       </g>
+     );
   }
+
   return <svg viewBox="0 0 140 120" className="w-32 h-32 sm:w-48 sm:h-48 mx-auto drop-shadow-sm">{content}</svg>;
 };
 
@@ -404,12 +677,23 @@ export default function App() {
 
   // --- EINSTELLUNGEN ---
   const [settings, setSettings] = useState<AppSettings>(() => {
-    try { const saved = localStorage.getItem("mathe_settings"); if (saved) return JSON.parse(saved); } catch (e) {}
-    return { difficulty: 2, cubeGridSize: "random", activeShapes: ["cube", "cuboid", "cylinder", "pyramid", "sphere", "cone", "prism"] };
+    try {
+      const saved = localStorage.getItem("mathe_settings");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      difficulty: 2,
+      cubeGridSize: "random",
+      activeShapes: ["cube", "cuboid", "cylinder", "pyramid", "sphere", "cone", "prism"]
+    };
   });
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  useEffect(() => { localStorage.setItem("mathe_settings", JSON.stringify(settings)); }, [settings]);
+
+  useEffect(() => {
+    localStorage.setItem("mathe_settings", JSON.stringify(settings));
+  }, [settings]);
+
 
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [offlineReady, setOfflineReady] = useState(() => localStorage.getItem(OFFLINE_READY_KEY) === "1");
@@ -433,28 +717,87 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false);
 
   const [history, setHistory] = useState<HistoryEntry[]>(() => {
-    try { const saved = localStorage.getItem("mathe-trainer-history"); return saved ? JSON.parse(saved) : []; } catch (e) { return []; }
+    try {
+      const saved = localStorage.getItem("mathe-trainer-history");
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
   });
 
-  useEffect(() => { localStorage.setItem("mathe-trainer-history", JSON.stringify(history)); }, [history]);
+  useEffect(() => {
+    localStorage.setItem("mathe-trainer-history", JSON.stringify(history));
+  }, [history]);
   
   useEffect(() => {
-    const update = () => { const offlineNow = !navigator.onLine; setIsOffline(offlineNow); if (!offlineNow) { localStorage.setItem(OFFLINE_READY_KEY, "1"); setOfflineReady(true); } };
-    window.addEventListener("online", update); window.addEventListener("offline", update); update();
-    return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
+    const update = () => {
+      const offlineNow = !navigator.onLine;
+      setIsOffline(offlineNow);
+
+      if (!offlineNow) {
+        localStorage.setItem(OFFLINE_READY_KEY, "1");
+        setOfflineReady(true);
+      }
+    };
+
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    update();
+
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
   }, []);
 
   useEffect(() => {
-    if (mode !== "menu" && mode !== "history" && !isRoundOver && !currentQuestion) setMode("menu");
+    if (
+      mode !== "menu" &&
+      mode !== "history" &&
+      !isRoundOver &&
+      !currentQuestion
+    )
+      setMode("menu");
   }, [mode, currentQuestion, isRoundOver]);
 
   // --- HELPER LOGIC ---
   const pickModeForCategory = (cat: Category): GameMode => {
-    const calcModes: GameMode[] = ["multiplication", "division", "division_remainder", "inverse_calc", "addition", "subtraction", "addition_1000", "subtraction_1000", "pyramid", "estimation", "gap_add", "gap_sub"];
-    const moneyModes: GameMode[] = ["money_count", "money_calc", "money_pay", "shopping", "word_problem"];
-    const grade3Modes: GameMode[] = ["cube_buildings", "geometry_shapes", "geometry_riddles", "units_length", "units_weight", "compare_units", "realistic_sizes", "word_problem_units"];
+    const calcModes: GameMode[] = [
+      "multiplication",
+      "division",
+      "division_remainder",
+      "inverse_calc",
+      "addition",
+      "subtraction",
+      "addition_1000",
+      "subtraction_1000",
+      "pyramid",
+      "estimation",
+      "gap_add",
+      "gap_sub",
+    ];
+    const moneyModes: GameMode[] = [
+      "money_count",
+      "money_calc",
+      "money_pay",
+      "shopping",
+      "word_problem",
+    ];
+    const grade3Modes: GameMode[] = [
+      "cube_buildings",
+      "geometry_shapes",
+      "geometry_riddles",
+      "units_length",
+      "units_weight",
+      "compare_units",
+      "realistic_sizes",
+      "word_problem_units",
+    ];
     let pool: GameMode[] = [];
-    if (cat === "calc") pool = calcModes; else if (cat === "money") pool = moneyModes; else if (cat === "grade3") pool = grade3Modes; else pool = [...calcModes, ...moneyModes, ...grade3Modes];
+    if (cat === "calc") pool = calcModes;
+    else if (cat === "money") pool = moneyModes;
+    else if (cat === "grade3") pool = grade3Modes;
+    else pool = [...calcModes, ...moneyModes, ...grade3Modes];
     return pool[rand(0, pool.length - 1)];
   };
 
@@ -462,10 +805,13 @@ export default function App() {
     let q: Question = { text: "", answer: 0 };
     let signature = "";
     let attempts = 0;
-    const dif = settings.difficulty;
+    const dif = settings.difficulty; // Lese eingestellten Schwierigkeitsgrad
 
     do {
-      setMultiInputs({}); setActiveCellId(null); setInput(""); setSelectedMoney([]);
+      setMultiInputs({});
+      setActiveCellId(null);
+      setInput("");
+      setSelectedMoney([]);
       
       // --- KLASSE 3 ERWEITERUNGEN ---
       
@@ -869,11 +1215,16 @@ export default function App() {
 
   const renderMultiInputCell = (id: string, value: number | string, isGiven: boolean, label?: string, customStyle?: string) => {
     const isActive = activeCellId === id; const userInput = multiInputs[id] || ""; let isWrong = false; const parsedInput = (userInput === "" || userInput === undefined) ? 0 : parseInt(userInput);
-    if (feedback === "wrong" && !isGiven) { isWrong = typeof value === "number" ? parsedInput !== value : userInput !== value; }
+    
+    if (feedback === "wrong" && !isGiven) {
+      isWrong = typeof value === "number" ? parsedInput !== value : userInput !== value;
+    }
+
     let baseStyle = customStyle || "w-14 h-14 sm:w-16 sm:h-16 border-2 rounded-xl";
     let colorStyle = isGiven ? "bg-slate-200 border-slate-300 text-slate-500" : isActive && feedback === "none" ? "bg-white border-blue-500 ring-4 ring-blue-100 scale-105 z-10" : "bg-white border-slate-300 hover:bg-slate-50";
     if (isWrong) colorStyle = "bg-red-50 border-red-300 text-red-600";
     if (feedback === "correct" && !isGiven) colorStyle = "bg-green-50 border-green-500 text-green-700";
+    
     return (
       <div key={id} className="flex flex-col items-center">
         {label && <div className="text-[10px] sm:text-xs text-slate-400 font-bold mb-1 uppercase text-center w-full">{label}</div>}
@@ -1115,7 +1466,7 @@ export default function App() {
           <div className="overflow-y-auto px-1 max-h-[70vh]">
             <CategorySection title="Klasse 3: Raum & Größen" cat="grade3" modes={["cube_buildings", "geometry_shapes", "geometry_riddles", "units_length", "units_weight", "compare_units", "realistic_sizes", "word_problem_units"]} onStart={startGame} />
             <CategorySection title="Rechnen & Knobeln" cat="calc" modes={["addition_1000", "subtraction_1000", "gap_add", "gap_sub", "multiplication", "division", "division_remainder", "inverse_calc", "addition", "subtraction", "pyramid", "estimation"]} onStart={startGame} />
-            <CategorySection title="Geld & Sachaufgaben" cat="money" modes={["money_count", "money_compare", "money_calc", "money_pay", "shopping", "word_problem"]} onStart={startGame} />
+            <CategorySection title="Geld & Sachaufgaben" cat="money" modes={["money_count", "money_calc", "money_pay", "shopping", "word_problem"]} onStart={startGame} />
           </div>
 
           {/* EINSTELLUNGEN MODAL */}
