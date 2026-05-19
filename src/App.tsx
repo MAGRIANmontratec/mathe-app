@@ -113,6 +113,7 @@ interface Question {
   answer: number | string; // Erweitert für Text-Antworten (>, <, =, MC)
   helpText?: string;
   isCompare?: boolean; // Aktiviert die <, =, > Tastatur
+  compareData?: { left: string | React.ReactNode; right: string | React.ReactNode }; // NEU: Daten für Vergleiche
   mcOptions?: string[]; // Aktiviert Multiple Choice Buttons
   gridData?: {
     cells: GridCell[];
@@ -827,7 +828,7 @@ export default function App() {
                   { l: "68 mm", r: "8,6 cm", ans: "<", h: "8,6 cm sind 86 mm." }
               ];
               const c = comparisons[rand(0, comparisons.length - 1)];
-              q = { text: <div className="text-3xl sm:text-4xl font-bold flex items-center justify-center gap-4"><span>{c.l}</span><span className="w-16 h-16 bg-slate-100 rounded-xl border-4 border-dashed border-slate-300 flex items-center justify-center text-slate-400">?</span><span>{c.r}</span></div>, answer: c.ans, isCompare: true, helpText: c.h };
+              q = { text: "Vergleiche die Längen", answer: c.ans, isCompare: true, compareData: { left: c.l, right: c.r }, helpText: c.h };
               signature = `compL-${c.l}-${c.r}`;
           } else { // Gewichte vergleichen
               const comparisons = [
@@ -845,7 +846,7 @@ export default function App() {
                   if (str === "¼ kg") return <div className="flex items-center gap-1"><div className="flex flex-col text-lg items-center leading-[0.8]"><span className="border-b-2 border-slate-700 pb-[1px]">1</span><span className="pt-[1px]">4</span></div> kg</div>;
                   return str;
               };
-              q = { text: <div className="text-3xl sm:text-4xl font-bold flex items-center justify-center gap-4"><span>{renderSide(c.l)}</span><span className="w-16 h-16 bg-slate-100 rounded-xl border-4 border-dashed border-slate-300 flex items-center justify-center text-slate-400">?</span><span>{renderSide(c.r)}</span></div>, answer: c.ans, isCompare: true, helpText: c.h };
+              q = { text: "Vergleiche die Gewichte", answer: c.ans, isCompare: true, compareData: { left: renderSide(c.l), right: renderSide(c.r) }, helpText: c.h };
               signature = `compW-${c.l}-${c.r}`;
           }
       } else if (targetMode === "realistic_sizes") {
@@ -1141,9 +1142,18 @@ export default function App() {
   const handleNumPad = (val: string) => {
     if (feedback !== "none") return;
     let currentVal = activeCellId ? multiInputs[activeCellId] || "" : input;
-    if (val === "DEL") handleInputChange(activeCellId, currentVal.slice(0, -1));
-    else if (val === ",") { if (!currentVal.includes(",")) handleInputChange(activeCellId, currentVal + ","); } 
-    else { if (currentVal.length < 6) handleInputChange(activeCellId, currentVal + val); }
+    
+    if (currentQuestion?.isCompare) {
+      if (val === "DEL") handleInputChange(activeCellId, "");
+      else if (val === "<" || val === "=" || val === ">") handleInputChange(activeCellId, val); // Direktes Überschreiben
+    } else {
+      if (val === "DEL") handleInputChange(activeCellId, currentVal.slice(0, -1));
+      else if (val === ",") {
+        if (!currentVal.includes(",")) handleInputChange(activeCellId, currentVal + ",");
+      } else {
+        if (currentVal.length < 6) handleInputChange(activeCellId, currentVal + val);
+      }
+    }
     playSound("click", soundEnabled);
   };
 
@@ -1311,6 +1321,25 @@ export default function App() {
           renderMoneyPay()
         ) : mode === "shopping" ? (
           renderShopping()
+        ) : currentQuestion.isCompare && currentQuestion.compareData ? (
+          <div className="w-full flex flex-col items-center mt-2">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-800 text-center mb-8">{currentQuestion.text}</div>
+            <div className="text-3xl sm:text-5xl font-bold flex items-center justify-center gap-4 sm:gap-8 w-full px-2">
+              <span className="flex-1 text-right flex justify-end items-center">{currentQuestion.compareData.left}</span>
+              <span className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-4 text-4xl sm:text-5xl flex items-center justify-center transition-all shrink-0 ${
+                  input ? (feedback === 'correct' ? 'bg-green-50 border-green-500 text-green-600 scale-110 shadow-lg ring-4 ring-green-100' : feedback === 'wrong' ? 'bg-red-50 border-red-500 text-red-600 scale-110 shadow-lg ring-4 ring-red-100' : 'bg-white border-blue-500 text-blue-600 scale-110 shadow-lg ring-4 ring-blue-100')
+                        : 'bg-slate-50 border-dashed border-slate-300 text-slate-400'
+              }`}>
+                {input || "?"}
+              </span>
+              <span className="flex-1 text-left flex justify-start items-center">{currentQuestion.compareData.right}</span>
+            </div>
+            {feedback === "wrong" && (
+              <div className="text-green-600 font-bold text-xl mt-8 bg-green-50 px-6 py-3 rounded-xl border-2 border-green-200 animate-pulse">
+                Lösung: {currentQuestion.answer}
+              </div>
+            )}
+          </div>
         ) : currentQuestion.gridData ? (
           <div className="w-full flex flex-col items-center">
             {typeof currentQuestion.text === "string" ? (<h3 className="text-xl font-bold text-slate-500 mb-2">{currentQuestion.text}</h3>) : (currentQuestion.text)}
