@@ -6,21 +6,11 @@ import {
   Home,
   Volume2,
   VolumeX,
-  LayoutGrid,
   Pyramid,
   ShoppingBag,
-  ListOrdered,
-  GripHorizontal,
-  AlignCenterHorizontal,
-  GitCommitHorizontal,
-  TrendingUp,
   Box,
-  Users,
   BookOpen,
   Layers,
-  Triangle,
-  CircleDashed,
-  Target,
   Calculator,
   Trash2,
   Scale,
@@ -44,7 +34,7 @@ const QUESTIONS_PER_ROUND = 10;
 const OFFLINE_READY_KEY = "mathe_offline_ready";
 
 // --- TYPEN ---
-type Category = "calc" | "space" | "money" | "mixed" | "grade3";
+type Category = "calc" | "money" | "mixed" | "grade3";
 
 type GameMode =
   | "menu"
@@ -61,27 +51,10 @@ type GameMode =
   | "division_remainder"
   | "inverse_calc"
   | "pyramid"
-  | "calc_table"
-  | "fact_family"
-  | "triangle"
-  | "triangle_add"
-  | "calc_wheel"
   | "estimation"
-  // KATEGORIE: ZAHLENRAUM
-  | "rounding"
-  | "arrows"
-  | "symbols"
-  | "shapes"
-  | "neighbors"
-  | "sequences"
-  | "sorting"
-  | "number_line"
-  | "chain"
-  | "place_value"
   // KATEGORIE: GELD & SACH
   | "money_count"
   | "money_calc"
-  | "money_compare"
   | "money_pay"
   | "shopping"
   | "word_problem"
@@ -109,7 +82,6 @@ interface GridCell {
   val: number | string;
   isGiven: boolean;
   label?: string;
-  x?: number;
 }
 
 interface StepData {
@@ -127,45 +99,6 @@ interface ShoppingData {
   change: number;
 }
 
-interface PlaceValueData {
-  h: number;
-  z: number;
-  e: number;
-}
-
-interface FactFamilyData {
-  a: number;
-  b: number;
-  prod: number;
-}
-
-interface TriangleData {
-  top: number;
-  left: number;
-  right: number;
-  prodLeft: number;
-  prodRight: number;
-  prodBottom: number;
-  sumLeft?: number;
-  sumRight?: number;
-  sumBottom?: number;
-  mode: "mult" | "add";
-}
-
-interface WheelData {
-  center: number;
-  op: string;
-  segments: { inner: number; outer: number }[];
-}
-
-interface MoneyCompareData {
-  walletA: number[];
-  walletB: number[];
-  sumA: number;
-  sumB: number;
-  diff: number;
-}
-
 interface EstimationData {
   a: number;
   b: number;
@@ -178,32 +111,16 @@ interface EstimationData {
 interface Question {
   text: string | React.ReactNode;
   answer: number | string; // Erweitert für Text-Antworten (>, <, =, MC)
-  hint?: string;
   helpText?: string;
-  signature?: string;
   isCompare?: boolean; // Aktiviert die <, =, > Tastatur
   mcOptions?: string[]; // Aktiviert Multiple Choice Buttons
   gridData?: {
     cells: GridCell[];
-    type:
-      | "shape"
-      | "pyramid"
-      | "cube_plan"
-      | "calc_table"
-      | "neighbors"
-      | "sequence"
-      | "sorting"
-      | "number_line"
-      | "chain";
+    type: "pyramid" | "cube_plan";
     meta?: any;
   };
   stepData?: StepData;
   shoppingData?: ShoppingData;
-  placeValueData?: PlaceValueData;
-  factFamilyData?: FactFamilyData;
-  triangleData?: TriangleData;
-  wheelData?: WheelData;
-  moneyCompareData?: MoneyCompareData;
   divisionData?: {
     dividend: number;
     divisor: number;
@@ -213,7 +130,6 @@ interface Question {
   inverseData?: { a: number; b: number; add: number; result: number };
   estimationData?: EstimationData;
   payData?: { target: number };
-  wordProblemAnswer?: number;
   isDecimal?: boolean;
 }
 
@@ -294,13 +210,7 @@ const getModeInfo = (m: string): ModeInfo => {
     case "addition_1000": return { name: "Plus 1000", icon: <Calculator size={20} />, color: "bg-orange-600", border: "border-orange-800" };
     case "subtraction_1000": return { name: "Minus 1000", icon: <Calculator size={20} />, color: "bg-red-600", border: "border-red-800" };
     case "estimation": return { name: "Überschlag", icon: <Scale size={20} />, color: "bg-purple-600", border: "border-purple-800" };
-    case "rounding": return { name: "Runden", icon: <Target size={20} />, color: "bg-cyan-500", border: "border-cyan-700" };
     case "pyramid": return { name: "Mauer", icon: <Pyramid size={20} />, color: "bg-indigo-500", border: "border-indigo-700" };
-    case "neighbors": return { name: "Nachbarn", icon: <GripHorizontal size={20} />, color: "bg-teal-600", border: "border-teal-800" };
-    case "sequences": return { name: "Folgen", icon: <ListOrdered size={20} />, color: "bg-lime-600", border: "border-lime-800" };
-    case "chain": return { name: "Kette", icon: <GitCommitHorizontal size={20} />, color: "bg-violet-600", border: "border-violet-800" };
-    case "number_line": return { name: "Strahl", icon: <AlignCenterHorizontal size={20} />, color: "bg-indigo-400", border: "border-indigo-600" };
-    case "place_value": return { name: "Stellen", icon: <Box size={20} />, color: "bg-blue-600", border: "border-blue-800" };
     case "money_count": return { name: "Zählen", icon: "💰", color: "bg-yellow-500", border: "border-yellow-700" };
     case "money_calc": return { name: "Rechnen €", icon: <Coins size={20} />, color: "bg-emerald-600", border: "border-emerald-800" };
     case "money_pay": return { name: "Bezahlen", icon: <Banknote size={20} />, color: "bg-green-600", border: "border-green-800" };
@@ -541,11 +451,10 @@ export default function App() {
   // --- HELPER LOGIC ---
   const pickModeForCategory = (cat: Category): GameMode => {
     const calcModes: GameMode[] = ["multiplication", "division", "division_remainder", "inverse_calc", "addition", "subtraction", "addition_1000", "subtraction_1000", "pyramid", "estimation", "gap_add", "gap_sub"];
-    const spaceModes: GameMode[] = ["rounding", "number_line", "neighbors", "sequences", "chain", "place_value"];
-    const moneyModes: GameMode[] = ["money_count", "money_calc", "money_compare", "shopping", "word_problem", "money_pay"];
+    const moneyModes: GameMode[] = ["money_count", "money_calc", "money_pay", "shopping", "word_problem"];
     const grade3Modes: GameMode[] = ["cube_buildings", "geometry_shapes", "geometry_riddles", "units_length", "units_weight", "compare_units", "realistic_sizes", "word_problem_units"];
     let pool: GameMode[] = [];
-    if (cat === "calc") pool = calcModes; else if (cat === "space") pool = spaceModes; else if (cat === "money") pool = moneyModes; else if (cat === "grade3") pool = grade3Modes; else pool = [...calcModes, ...spaceModes, ...moneyModes, ...grade3Modes];
+    if (cat === "calc") pool = calcModes; else if (cat === "money") pool = moneyModes; else if (cat === "grade3") pool = grade3Modes; else pool = [...calcModes, ...moneyModes, ...grade3Modes];
     return pool[rand(0, pool.length - 1)];
   };
 
@@ -585,7 +494,6 @@ export default function App() {
                   { l: "1000 g", r: "2 kg", ans: "<", h: "2 kg = 2000 g." }
               ];
               const c = comparisons[rand(0, comparisons.length - 1)];
-              // Schöne Darstellung von Brüchen
               const renderSide = (str: string) => {
                   if (str === "½ kg") return <div className="flex items-center gap-1"><div className="flex flex-col text-lg items-center leading-[0.8]"><span className="border-b-2 border-slate-700 pb-[1px]">1</span><span className="pt-[1px]">2</span></div> kg</div>;
                   if (str === "¼ kg") return <div className="flex items-center gap-1"><div className="flex flex-col text-lg items-center leading-[0.8]"><span className="border-b-2 border-slate-700 pb-[1px]">1</span><span className="pt-[1px]">4</span></div> kg</div>;
@@ -624,17 +532,17 @@ export default function App() {
         if (type === 1) { const a = rand(2, 25); q = { text: `${a} cm = ? mm`, answer: a * 10, helpText: "1 cm sind 10 mm. Hänge eine Null an." }; signature = `len1-${a}`; }
         else if (type === 2) { const a = rand(2, 50); q = { text: `${a * 10} mm = ? cm`, answer: a, helpText: "Nimm eine Null weg, denn 10 mm sind 1 cm." }; signature = `len2-${a}`; }
         else if (type === 3) { const a = rand(2, 12); q = { text: `${a} m = ? cm`, answer: a * 100, helpText: "1 m sind 100 cm. Hänge zwei Nullen an." }; signature = `len3-${a}`; }
-        else if (type === 4) { // Ergänze zu 1 km (Neu aus Buch)
+        else if (type === 4) { 
            const a = rand(1, 9) * 100 + (rand(0,1) === 1 ? 50 : 0);
            q = { text: <div className="text-center text-3xl font-bold">{a} m + <span className="text-blue-500">? m</span> = 1 km</div>, answer: 1000 - a, helpText: "1 km sind genau 1000 m. Wie viel fehlt bis zur 1000?" }; 
            signature = `len4-${a}`; 
         }
-        else if (type === 5) { // Kommaschreibweise (Neu aus Buch)
+        else if (type === 5) { 
            const cm = rand(2, 15); const mm = rand(1, 9);
            q = { text: `${cm} cm ${mm} mm = ? cm`, answer: `${cm},${mm}`, mcOptions: [`${cm},${mm}`, `${cm}${mm}`, `${mm},${cm}`, `${cm},0${mm}`], helpText: "Die Millimeter kommen nach dem Komma." }; 
            signature = `len5-${cm}-${mm}`; 
         }
-        else { // Ergänze zu 1 cm (Neu aus Buch)
+        else {
           const mm = rand(1, 9);
           q = { text: <div className="text-center text-3xl font-bold">{mm} mm + <span className="text-blue-500">? mm</span> = 1 cm</div>, answer: 10 - mm, helpText: "1 cm sind genau 10 mm. Wie viel fehlt bis zur 10?" };
           signature = `len6-${mm}`;
@@ -642,17 +550,17 @@ export default function App() {
       } else if (targetMode === "units_weight") {
         const type = rand(1, 5);
         if (type === 1) { const a = rand(2, 15); q = { text: `${a} kg = ? g`, answer: a * 1000, helpText: "1 kg sind 1000 g. Hänge drei Nullen an." }; signature = `wei1-${a}`; }
-        else if (type === 2) { // Ergänze zu 1 kg
+        else if (type === 2) { 
            const a = rand(1, 9) * 100 + (rand(0,1) === 1 ? 50 : 0);
            q = { text: <div className="text-center text-3xl font-bold">{a} g + <span className="text-blue-500">? g</span> = 1 kg</div>, answer: 1000 - a, helpText: "1 kg sind genau 1000 g. Wie viel fehlt bis zur 1000?" }; 
            signature = `wei2-${a}`; 
         }
-        else if (type === 3) { // Ergänze zu 1/2 kg (Neu aus Buch)
+        else if (type === 3) { 
            const a = rand(1, 4) * 100 + rand(1, 9) * 10;
            q = { text: <div className="text-center text-3xl font-bold flex justify-center items-center gap-2">{a} g + <span className="text-blue-500">? g</span> = <div className="flex flex-col text-xl items-center leading-[0.8]"><span className="border-b-2 border-slate-700 pb-[1px]">1</span><span className="pt-[1px]">2</span></div> kg</div>, answer: 500 - a, helpText: "Ein halbes Kilogramm (½ kg) sind genau 500 g. Wie viel fehlt bis zur 500?" }; 
            signature = `wei3-${a}`; 
         }
-        else if (type === 4) { // Ergänze zu 1/4 kg (Neu aus Buch)
+        else if (type === 4) { 
            const a = rand(5, 20) * 10;
            q = { text: <div className="text-center text-3xl font-bold flex justify-center items-center gap-2">{a} g + <span className="text-blue-500">? g</span> = <div className="flex flex-col text-xl items-center leading-[0.8]"><span className="border-b-2 border-slate-700 pb-[1px]">1</span><span className="pt-[1px]">4</span></div> kg</div>, answer: 250 - a, helpText: "Ein viertel Kilogramm (¼ kg) sind genau 250 g. Wie viel fehlt bis zur 250?" }; 
            signature = `wei4-${a}`; 
@@ -664,8 +572,18 @@ export default function App() {
         }
       }
 
-      // --- ALTE MODI (unverändert) ---
-      else if (targetMode === "multiplication") {
+      // --- ALTE MODI ---
+      else if (targetMode === "addition") {
+        const maxA = dif === 1 ? 50 : 100;
+        const a = rand(10, maxA); const b = rand(10, maxA);
+        q = { text: `${a} + ${b} = ?`, answer: a + b, helpText: "Zähle die Einer und Zehner zusammen." };
+        signature = `add-${a}-${b}`;
+      } else if (targetMode === "subtraction") {
+        const maxA = dif === 1 ? 50 : 100;
+        const a = rand(30, maxA); const b = rand(10, a);
+        q = { text: `${a} - ${b} = ?`, answer: a - b, helpText: "Ziehe erst die Zehner und dann die Einer ab." };
+        signature = `sub-${a}-${b}`;
+      } else if (targetMode === "multiplication") {
         const multMax = dif === 1 ? 6 : dif === 2 ? 9 : 12;
         const a = rand(2, multMax); const b = rand(2, multMax);
         q = { text: `${a} · ${b} = ?`, answer: a * b, helpText: "Erinnere dich an die Einmaleins-Reihen. Zähle in Schritten, wenn du dir unsicher bist." };
@@ -724,6 +642,71 @@ export default function App() {
         q = { text: "Überschlage (runde auf Hunderter)", answer: 0, estimationData: { a: exactA, b: exactB, roundedA, roundedB, estResult: estRes, op: isPlus ? "+" : "-" }, helpText: "Runde beide Zahlen auf volle Hunderter. Ab 50 wird aufgerundet, darunter abgerundet. Danach rechne mit den Hundertern." };
         signature = `est-${exactA}${isPlus ? '+' : '-'}${exactB}`;
         setActiveCellId("est-roundA");
+      } else if (targetMode === "money_count") {
+        const notes = [500, 1000, 2000, 5000]; const coins = [1, 2, 5, 10, 20, 50, 100, 200];
+        const numItems = dif === 1 ? rand(2, 4) : dif === 2 ? rand(3, 6) : rand(5, 8);
+        let totalCents = 0;
+        type MoneyItem = { val: number; type: "note" | "coin" };
+        const moneyItems: MoneyItem[] = [];
+        for (let i = 0; i < numItems; i++) {
+          const isNote = rand(0, 10) > 6;
+          const val = isNote ? notes[rand(0, notes.length - 1)] : coins[rand(0, coins.length - 1)];
+          moneyItems.push({ val, type: isNote ? "note" : "coin" });
+          totalCents += val;
+        }
+        moneyItems.sort((a, b) => b.val - a.val);
+        const moneyContent = (
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap justify-center items-end gap-2 sm:gap-4 max-w-lg">
+              {moneyItems.map((item, idx) => item.type === "note" ? <Bill key={idx} value={item.val / 100} /> : <Coin key={idx} value={item.val} />)}
+            </div>
+            <div className="text-slate-400 text-sm font-medium mt-2">Betrag in Euro (z.B. 12,50)</div>
+          </div>
+        );
+        q = { text: moneyContent, answer: totalCents, isDecimal: true, helpText: "Zähle zuerst die großen Scheine, dann die großen Münzen und zuletzt das Kleingeld." };
+        signature = `moneyCount-${totalCents}-${rand(1,1000)}`;
+      } else if (targetMode === "money_pay") {
+        const maxEuro = dif === 1 ? 10 : dif === 2 ? 20 : 50;
+        const euro = rand(1, maxEuro); const cent = rand(1, 99); const total = euro * 100 + cent;
+        q = { text: `Bezahle passend`, answer: total, payData: { target: total }, helpText: "Klicke auf die Scheine und Münzen unten, bis du genau den verlangten Betrag im grünen Feld hast." };
+        signature = `moneyPay-${total}`;
+      } else if (targetMode === "money_calc") {
+        const maxC = dif === 1 ? 20 : dif === 2 ? 40 : 80;
+        const centsA = rand(1, maxC) * 10 + rand(0, 1) * 5; const centsB = rand(1, maxC) * 10 + rand(0, 1) * 5;
+        const isPlus = rand(0, 1) === 0;
+        const total = isPlus ? centsA + centsB : Math.max(centsA, centsB) - Math.min(centsA, centsB);
+        const val1 = isPlus ? centsA : Math.max(centsA, centsB); const val2 = isPlus ? centsB : Math.min(centsA, centsB);
+        const format = (c: number) => (c / 100).toFixed(2).replace(".", ",") + " €";
+        q = { text: `${format(val1)} ${isPlus ? "+" : "-"} ${format(val2)} = ?`, answer: total, isDecimal: true, helpText: "Stelle dir vor, das Komma wäre nicht da. Rechne in Cent und setze das Komma am Ende wieder vor die letzten beiden Ziffern." };
+        signature = `moneyCalc-${val1}${isPlus ? '+' : '-'}${val2}`;
+      } else if (targetMode === "shopping") {
+        const products = [
+          { name: "Brezel", price: 85, icon: "🥨" }, { name: "Stift", price: 150, icon: "✏️" },
+          { name: "Apfel", price: 60, icon: "🍎" }, { name: "Heft", price: 220, icon: "📓" },
+          { name: "Eis", price: 120, icon: "🍦" }, { name: "Ball", price: 450, icon: "⚽" },
+        ];
+        const p1 = products[rand(0, products.length - 1)]; let p2 = products[rand(0, products.length - 1)];
+        while (p1 === p2) p2 = products[rand(0, products.length - 1)];
+        const totalCost = p1.price + p2.price;
+        let payAmount = totalCost < 500 ? 500 : totalCost < 1000 ? 1000 : totalCost < 2000 ? 2000 : 5000;
+        const change = payAmount - totalCost;
+        q = {
+          text: "Einkaufen", answer: change,
+          shoppingData: { items: [p1, p2], wallet: payAmount, total: totalCost, change: change },
+          isDecimal: true,
+          helpText: "Schritt 1: Rechne die Preise zusammen. Schritt 2: Ziehe die Summe von dem Geld ab, das du gibst (Rückgeld)."
+        };
+        signature = `shop-${p1.name}-${p2.name}`;
+        setActiveCellId("shop-total");
+      } else if (targetMode === "word_problem") {
+        const problems = [
+          { text: "Anna hat 5 €. Sie kauft ein Eis für 1,50 €. Wie viel Geld hat sie noch?", ans: 350 },
+          { text: "Ein Buch kostet 12 €. Tom hat 8 €. Wie viel Euro fehlen ihm?", ans: 400 },
+          { text: "Lara kauft 3 Stifte für je 2 €. Wie viel muss sie bezahlen?", ans: 600 }
+        ];
+        const p = problems[rand(0, problems.length - 1)];
+        q = { text: <div className="text-2xl sm:text-3xl font-medium text-slate-700 leading-relaxed max-w-lg text-center px-4">{p.text}</div>, answer: p.ans, isDecimal: true, helpText: "Lies genau: Musst du Plus, Minus oder Mal rechnen?" };
+        signature = `wp-${p.ans}`;
       } else if (targetMode === "cube_buildings") {
         let rows = 3; let cols = 3;
         if (settings.cubeGridSize === "random") { rows = rand(2, 3); cols = rand(2, 4); } else { const parts = settings.cubeGridSize.split("x"); rows = parseInt(parts[0]); cols = parseInt(parts[1]); }
@@ -759,7 +742,7 @@ export default function App() {
         q = { text: ( <div className="flex flex-col items-center"><ShapePreview type={s.id} /><div className="text-3xl sm:text-4xl font-black text-slate-800 mt-6 mb-2 text-center">{s.name}</div><div className="text-xl sm:text-2xl text-slate-600 text-center">Wie viele <span className="text-blue-600 font-bold">{capP}</span> hat dieser Körper?</div></div> ), answer: s[p], helpText: "Ecken sind die spitzen Punkte. Kanten sind die geraden oder runden Linien, an denen Flächen zusammenstoßen. Flächen sind die glatten Außenwände." };
         signature = `geo-${s.id}-${p}`;
       } else if (targetMode === "word_problem_units") {
-        const problems = [ { text: "Ein Brett ist 2 m lang. Es werden 30 cm abgesägt. Wie lang ist es noch in cm?", ans: 170 }, { text: "Tom wandert an 3 Tagen. Tag 1: 12 km, Tag 2: 9 km, Tag 3: 11 km. Wie lang ist die Strecke insgesamt in km?", ans: 32 }, { text: "In eine Tüte passen 250 g Äpfel. Wie viel Gramm Äpfel sind in 4 Tüten?", ans: 1000 }, { text: "Ein Bäcker braucht 2 kg Mehl. Er hat schon 800 g. Wie viele Gramm (g) fehlen ihm noch?", ans: 1200 }, { text: "Die Mosel ist insgesamt 544 km lang. Der französische Teil ist 313 km lang. Wie lang ist der deutsche Teil in km?", ans: 231 } ]; // Das Mosel-Beispiel aus dem Buch ergänzt!
+        const problems = [ { text: "Ein Brett ist 2 m lang. Es werden 30 cm abgesägt. Wie lang ist es noch in cm?", ans: 170 }, { text: "Tom wandert an 3 Tagen. Tag 1: 12 km, Tag 2: 9 km, Tag 3: 11 km. Wie lang ist die Strecke insgesamt in km?", ans: 32 }, { text: "In eine Tüte passen 250 g Äpfel. Wie viel Gramm Äpfel sind in 4 Tüten?", ans: 1000 }, { text: "Ein Bäcker braucht 2 kg Mehl. Er hat schon 800 g. Wie viele Gramm (g) fehlen ihm noch?", ans: 1200 }, { text: "Die Mosel ist insgesamt 544 km lang. Der französische Teil ist 313 km lang. Wie lang ist der deutsche Teil in km?", ans: 231 } ];
         const prob = problems[rand(0, problems.length - 1)];
         q = { text: <div className="text-xl sm:text-3xl font-medium text-slate-700 leading-relaxed max-w-lg text-center px-4">{prob.text}</div>, answer: prob.ans, helpText: "Lies dir die Aufgabe ganz genau durch. Manchmal musst du Einheiten (z.B. m in cm) erst umrechnen, bevor du Plus oder Minus rechnest." };
         signature = `wpU-${prob.ans}`;
@@ -769,10 +752,6 @@ export default function App() {
         q = { text: "Fülle die Mauer", answer: 0, gridData: { cells, type: "pyramid" }, helpText: "Addiere immer zwei Steine, die nebeneinander liegen. Das Ergebnis kommt in den Stein genau darüber." };
         signature = `pyr-${base1}-${base2}-${base3}`;
         setActiveCellId("s3");
-      } else {
-        const a = rand(2, 9), b = rand(2, 9);
-        q = { text: `${a} · ${b} = ?`, answer: a * b, helpText: "Einfache Multiplikation." };
-        signature = `fallback-${a}*${b}`;
       }
 
       attempts++;
@@ -799,7 +778,7 @@ export default function App() {
 
   const startGame = (target: GameMode | Category) => {
     usedQuestionsRef.current.clear(); setCorrectCount(0); setQuestionIndex(1); setIsRoundOver(false); setResponseTimes([]); setSelectedMoney([]); setShowHelpModal(false);
-    if (target === "calc" || target === "space" || target === "money" || target === "grade3" || target === "mixed") { setActiveCategory(target); const firstMode = pickModeForCategory(target); setMode(firstMode); generateQuestion(firstMode); } 
+    if (target === "calc" || target === "money" || target === "grade3" || target === "mixed") { setActiveCategory(target); const firstMode = pickModeForCategory(target); setMode(firstMode); generateQuestion(firstMode); } 
     else { setActiveCategory(null); setMode(target as GameMode); generateQuestion(target as GameMode); }
   };
 
@@ -833,9 +812,6 @@ export default function App() {
     } else if (mode === "shopping" && currentQuestion.shoppingData) {
       const d = currentQuestion.shoppingData; const userTotal = parseMoney(multiInputs["shop-total"]); const userChange = parseMoney(multiInputs["shop-change"]);
       isCorrect = userTotal === d.total && userChange === d.change;
-    } else if (mode === "money_compare" && currentQuestion.moneyCompareData) {
-      const d = currentQuestion.moneyCompareData; const uA = parseMoney(multiInputs["money-comp-a"]); const uB = parseMoney(multiInputs["money-comp-b"]); const uDiff = parseMoney(multiInputs["money-comp-diff"]);
-      isCorrect = uA === d.sumA && uB === d.sumB && uDiff === d.diff;
     } else if (mode === "division_remainder" && currentQuestion.divisionData) {
       const d = currentQuestion.divisionData; const userQ = parseInt(multiInputs["div-quotient"] || "0"); const userR = parseInt(multiInputs["div-remainder"] || "0");
       isCorrect = userQ === d.quotient && userR === d.remainder;
@@ -859,7 +835,7 @@ export default function App() {
       });
       isCorrect = stepsCorrect;
     } else if (currentQuestion.isDecimal) {
-      if (valueToCheck !== "") isCorrect = parseMoney(valueToCheck) === currentQuestion.answer;
+      if (valueToCheck !== "") isCorrect = parseMoney(valueToCheck) === (currentQuestion.answer as number);
     } else {
       if (valueToCheck !== "") isCorrect = parseInt(valueToCheck) === currentQuestion.answer;
     }
@@ -882,7 +858,8 @@ export default function App() {
 
   const jumpToNextField = () => {
     let allIds: string[] = [];
-    if (mode === "division_remainder") allIds = ["div-quotient", "div-remainder"];
+    if (mode === "shopping") allIds = ["shop-total", "shop-change"];
+    else if (mode === "division_remainder") allIds = ["div-quotient", "div-remainder"];
     else if (mode === "estimation") allIds = ["est-roundA", "est-roundB", "est-res"];
     else if (currentQuestion?.stepData) { currentQuestion.stepData.steps.forEach((_, idx) => { if (idx > 0) allIds.push(`step-${idx}-start`); allIds.push(`step-${idx}-add`); allIds.push(`step-${idx}-res`); }); allIds.push("main-result"); } 
     else if (currentQuestion?.gridData) { allIds = currentQuestion.gridData.cells.filter((c) => !c.isGiven).map((c) => c.id); }
@@ -908,6 +885,55 @@ export default function App() {
     );
   };
 
+  const renderMoneyPay = () => {
+    if (!currentQuestion?.payData) return null;
+    const selectedSum = selectedMoney.reduce((a, b) => a + b, 0); const target = currentQuestion.payData.target;
+    const notes = [5000, 2000, 1000, 500]; const coins = [200, 100, 50, 20, 10, 5, 2, 1];
+    return (
+      <div className="flex flex-col items-center w-full gap-4">
+        <div className="flex flex-wrap justify-center gap-2 p-4 bg-slate-100 rounded-2xl w-full">
+          {notes.map((v) => <Bill key={v} value={v / 100} onClick={() => handleMoneySelect(v)} />)}
+          {coins.map((v) => <Coin key={v} value={v} onClick={() => handleMoneySelect(v)} />)}
+        </div>
+        <div className="w-full min-h-[120px] bg-green-50 border-2 border-dashed border-green-300 rounded-2xl p-4 flex flex-wrap gap-2 justify-center items-center relative">
+          <div className="absolute top-2 left-2 text-xs font-bold text-green-700 uppercase tracking-wider">Dein Geld: {(selectedSum / 100).toFixed(2).replace(".", ",")} €</div>
+          <div className="absolute top-2 right-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Ziel: {(target / 100).toFixed(2).replace(".", ",")} €</div>
+          {selectedMoney.length === 0 && <div className="text-green-800/30 font-bold">Hier Geld hinlegen</div>}
+          {selectedMoney.map((v, i) => v >= 500 ? <Bill key={i} value={v / 100} onClick={() => handleMoneyRemove(i)} selected /> : <Coin key={i} value={v} onClick={() => handleMoneyRemove(i)} selected />)}
+        </div>
+        {feedback === "wrong" && <div className="text-green-600 font-bold bg-green-50 px-3 py-1 rounded border border-green-200">Ziel: {(target / 100).toFixed(2).replace(".", ",")} €</div>}
+      </div>
+    );
+  };
+
+  const renderShopping = () => {
+    if (!currentQuestion?.shoppingData) return null;
+    const d = currentQuestion.shoppingData;
+    return (
+      <div className="flex flex-col items-center gap-6 mt-4 w-full">
+        <div className="flex justify-center gap-8 bg-slate-50 p-6 rounded-2xl border-2 border-slate-200 w-full max-w-md">
+          {d.items.map((item, idx) => (
+            <div key={idx} className="flex flex-col items-center gap-2">
+              <span className="text-6xl">{item.icon}</span>
+              <span className="font-bold text-slate-700">{item.name}</span>
+              <span className="bg-white px-3 py-1 rounded-full text-sm font-bold shadow-sm border border-slate-200">{(item.price / 100).toFixed(2).replace(".", ",")} €</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md">
+          <div className="flex-1 bg-blue-50 p-4 rounded-xl border border-blue-200 w-full flex flex-col items-center">
+            <span className="text-sm font-bold text-blue-600 mb-2 uppercase">Zusammen</span>
+            {renderMultiInputCell("shop-total", d.total, false, undefined, "w-24 h-14 bg-white")}
+          </div>
+          <div className="flex-1 bg-green-50 p-4 rounded-xl border border-green-200 w-full flex flex-col items-center">
+            <span className="text-sm font-bold text-green-600 mb-2 uppercase text-center">Rückgeld von {(d.wallet / 100).toFixed(2).replace(".", ",")} €</span>
+            {renderMultiInputCell("shop-change", d.change, false, undefined, "w-24 h-14 bg-white")}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const renderGameContent = () => {
     if (!currentQuestion) return null;
     return (
@@ -926,8 +952,14 @@ export default function App() {
 
         {mode === "division_remainder" && currentQuestion.divisionData ? (
            <div className="flex items-center gap-2 text-2xl font-bold text-slate-700"><span>{currentQuestion.divisionData.dividend} : {currentQuestion.divisionData.divisor} =</span>{renderMultiInputCell("div-quotient", currentQuestion.divisionData.quotient, false, "Ergebnis", "w-16 h-16 border-2 rounded-xl")}<span>R</span>{renderMultiInputCell("div-remainder", currentQuestion.divisionData.remainder, false, "Rest", "w-16 h-16 border-2 rounded-xl")}</div>
+        ) : mode === "inverse_calc" && currentQuestion.inverseData ? (
+          <div className="flex flex-col items-center gap-4 mt-6"><div className="flex items-center gap-2 text-2xl font-bold text-slate-700 bg-blue-50 p-4 rounded-xl border border-blue-100"><span className="text-blue-500">{currentQuestion.inverseData.a}</span><span>·</span><span className="text-blue-500">{currentQuestion.inverseData.b}</span><span>+</span><span className="text-orange-500">{currentQuestion.inverseData.add}</span><span>=</span>{renderMultiInputCell("inv-res", currentQuestion.inverseData.result, false, undefined, "w-20 h-16 border-2 rounded-xl bg-white")}</div></div>
         ) : mode === "estimation" && currentQuestion.estimationData ? (
           <div className="flex flex-col items-center gap-4 mt-4"><div className="text-lg font-bold text-slate-400 mb-2">{currentQuestion.estimationData.a} {currentQuestion.estimationData.op} {currentQuestion.estimationData.b}</div><div className="flex items-center gap-2">{renderMultiInputCell("est-roundA", currentQuestion.estimationData.roundedA, false, "Rund 1", "w-20 h-14 border-2 rounded-lg")}<span className="text-2xl font-bold">{currentQuestion.estimationData.op}</span>{renderMultiInputCell("est-roundB", currentQuestion.estimationData.roundedB, false, "Rund 2", "w-20 h-14 border-2 rounded-lg")}<span className="text-2xl font-bold">=</span>{renderMultiInputCell("est-res", currentQuestion.estimationData.estResult, false, "Ergebnis", "w-20 h-14 border-2 rounded-lg bg-purple-50")}</div></div>
+        ) : mode === "money_pay" ? (
+          renderMoneyPay()
+        ) : mode === "shopping" ? (
+          renderShopping()
         ) : currentQuestion.gridData ? (
           <div className="w-full flex flex-col items-center">
             {typeof currentQuestion.text === "string" ? (<h3 className="text-xl font-bold text-slate-500 mb-2">{currentQuestion.text}</h3>) : (currentQuestion.text)}
@@ -937,6 +969,32 @@ export default function App() {
                <div className="flex flex-col items-center gap-2 mt-4"><div className="flex justify-center">{renderMultiInputCell(currentQuestion.gridData.cells[5].id, currentQuestion.gridData.cells[5].val as number, currentQuestion.gridData.cells[5].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}</div><div className="flex justify-center gap-1">{renderMultiInputCell(currentQuestion.gridData.cells[3].id, currentQuestion.gridData.cells[3].val as number, currentQuestion.gridData.cells[3].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}{renderMultiInputCell(currentQuestion.gridData.cells[4].id, currentQuestion.gridData.cells[4].val as number, currentQuestion.gridData.cells[4].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}</div><div className="flex justify-center gap-1">{renderMultiInputCell(currentQuestion.gridData.cells[0].id, currentQuestion.gridData.cells[0].val as number, currentQuestion.gridData.cells[0].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}{renderMultiInputCell(currentQuestion.gridData.cells[1].id, currentQuestion.gridData.cells[1].val as number, currentQuestion.gridData.cells[1].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}{renderMultiInputCell(currentQuestion.gridData.cells[2].id, currentQuestion.gridData.cells[2].val as number, currentQuestion.gridData.cells[2].isGiven, undefined, "w-16 h-10 sm:w-20 sm:h-14 border-2 rounded-lg mb-1")}</div></div>
             ) : null}
           </div>
+        ) : currentQuestion.stepData ? (
+          <div className="w-full flex flex-col items-center">
+            <h3 className="text-xl font-bold text-slate-500 mb-2">{currentQuestion.text}</h3>
+            <div className="flex flex-col items-center bg-white p-2 border-2 border-slate-200 shadow-inner rounded-xl overflow-hidden mt-4">
+              <div className="grid grid-cols-5 gap-0 bg-slate-100 border-l-2 border-t-2 border-slate-300">
+                <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">{currentQuestion.stepData.start}</div>
+                <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">{currentQuestion.stepData.operator}</div>
+                <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">{currentQuestion.stepData.operand}</div>
+                <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">=</div>
+                <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-xl font-mono cursor-pointer bg-white">{renderMultiInputCell("main-result", currentQuestion.stepData.result, false, undefined, "w-full h-full border-none rounded-none")}</div>
+                <div className="col-span-5 h-1 bg-slate-800 my-0"></div>
+                {currentQuestion.stepData.steps.map((step, idx) => {
+                  const isFirstRow = idx === 0; const prevRes = isFirstRow ? currentQuestion.stepData?.start : currentQuestion.stepData?.steps[idx - 1].res;
+                  return (
+                    <React.Fragment key={idx}>
+                      {isFirstRow ? ( <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">{prevRes}</div> ) : ( <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center bg-white">{renderMultiInputCell(`step-${idx}-start`, prevRes as number, false, undefined, "w-full h-full border-none rounded-none")}</div> )}
+                      <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">{currentQuestion.stepData?.operator}</div>
+                      <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center bg-white">{renderMultiInputCell(`step-${idx}-add`, step.val, false, undefined, "w-full h-full border-none rounded-none")}</div>
+                      <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center text-slate-500 bg-slate-50">=</div>
+                      <div className="w-14 h-12 border-b-2 border-r-2 border-slate-300 flex items-center justify-center bg-white">{renderMultiInputCell(`step-${idx}-res`, step.res, false, undefined, "w-full h-full border-none rounded-none")}</div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             <div className="w-full mb-6 flex justify-center text-center">
@@ -944,7 +1002,7 @@ export default function App() {
             </div>
             
             {/* Standard Eingabefeld (wird bei Multiple-Choice ausgeblendet) */}
-            {!currentQuestion.mcOptions && (
+            {!currentQuestion.mcOptions && !currentQuestion.isCompare && (
                 <div className={`w-64 h-20 bg-slate-100 rounded-2xl flex items-center justify-center text-5xl font-mono font-bold tracking-widest border-4 ${feedback === "none" ? "border-slate-200" : feedback === "correct" ? "border-green-500 text-green-600 bg-white" : "border-red-500 text-red-600 bg-white"}`}>
                   <input type="text" inputMode="none" value={input} onChange={(e) => handleInputChange(null, e.target.value)} className="w-full h-full text-center bg-transparent outline-none" />
                 </div>
@@ -961,8 +1019,8 @@ export default function App() {
                             className={`py-4 px-2 rounded-xl text-xl sm:text-2xl font-bold shadow-md border-b-4 transition-all ${
                                 feedback === "none" ? "bg-white text-slate-700 border-slate-200 hover:bg-blue-50 active:scale-95" 
                                 : input === opt && feedback === "wrong" ? "bg-red-100 text-red-600 border-red-300"
-                                : opt === currentQuestion.answer && feedback === "wrong" ? "bg-green-100 text-green-700 border-green-400 animate-pulse"
-                                : opt === currentQuestion.answer && feedback === "correct" ? "bg-green-500 text-white border-green-700 scale-105"
+                                : opt === currentQuestion.answer.toString() && feedback === "wrong" ? "bg-green-100 text-green-700 border-green-400 animate-pulse"
+                                : opt === currentQuestion.answer.toString() && feedback === "correct" ? "bg-green-500 text-white border-green-700 scale-105"
                                 : "bg-slate-50 text-slate-400 border-slate-200 opacity-50"
                             }`}
                         >
@@ -972,7 +1030,7 @@ export default function App() {
                 </div>
             )}
 
-            {feedback === "wrong" && !currentQuestion.mcOptions && (
+            {feedback === "wrong" && !currentQuestion.mcOptions && !currentQuestion.isCompare && (
               <div className="text-green-600 font-bold text-xl mt-4 bg-green-50 px-4 py-2 rounded-xl border-2 border-green-200 animate-pulse">
                 Lösung: {currentQuestion.isDecimal ? ((currentQuestion.answer as number) / 100).toFixed(2).replace(".", ",") + " €" : currentQuestion.answer}
               </div>
@@ -991,8 +1049,8 @@ export default function App() {
   };
 
   const renderNumPad = () => {
-    // Verstecke Numpad komplett bei Multiple Choice Aufgaben
-    if (currentQuestion?.mcOptions) return null;
+    // Verstecke Numpad komplett bei Multiple Choice oder bei Shopping
+    if (currentQuestion?.mcOptions || mode === "shopping") return null;
 
     // Spezielles Numpad für Vergleiche (<, =, >)
     if (currentQuestion?.isCompare) {
@@ -1044,9 +1102,18 @@ export default function App() {
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Mathe Profi</h1>
           </div>
 
+          {isOffline && (
+            <div className="mb-4 flex justify-center">
+              {offlineReady ? (
+                <div className="bg-green-100 border border-green-300 text-green-900 px-4 py-2 rounded-xl text-sm font-bold shadow-sm">✅ Offline verfügbar</div>
+              ) : (
+                <div className="bg-red-100 border border-red-300 text-red-900 px-4 py-2 rounded-xl text-sm font-bold shadow-sm">❌ Nicht komplett offline verfügbar</div>
+              )}
+            </div>
+          )}
+
           <div className="overflow-y-auto px-1 max-h-[70vh]">
-            {/* KLASSE 3 NACH OBEN GESCHOBEN */}
-            <CategorySection title="Neu: Aus deinem Buch (Klasse 3)" cat="grade3" modes={["units_length", "units_weight", "compare_units", "realistic_sizes", "geometry_shapes", "geometry_riddles", "cube_buildings", "word_problem_units"]} onStart={startGame} />
+            <CategorySection title="Klasse 3: Raum & Größen" cat="grade3" modes={["cube_buildings", "geometry_shapes", "geometry_riddles", "units_length", "units_weight", "compare_units", "realistic_sizes", "word_problem_units"]} onStart={startGame} />
             <CategorySection title="Rechnen & Knobeln" cat="calc" modes={["addition_1000", "subtraction_1000", "gap_add", "gap_sub", "multiplication", "division", "division_remainder", "inverse_calc", "addition", "subtraction", "pyramid", "estimation"]} onStart={startGame} />
             <CategorySection title="Geld & Sachaufgaben" cat="money" modes={["money_count", "money_compare", "money_calc", "money_pay", "shopping", "word_problem"]} onStart={startGame} />
           </div>
@@ -1125,6 +1192,11 @@ export default function App() {
         <div className="flex flex-col flex-1 min-h-0 relative">
           {renderGameContent()}
           {feedback !== "correct" && mode !== "money_pay" && renderNumPad()}
+          {feedback !== "correct" && mode === "money_pay" && (
+            <div className="mt-4">
+              <button onClick={() => checkAnswer()} className="w-full bg-green-500 text-white text-2xl font-bold rounded-2xl shadow border-b-4 border-green-700 py-4 active:scale-95 active:border-b-0">OK</button>
+            </div>
+          )}
         </div>
         <div className="w-full lg:w-1/3 h-64 lg:h-auto min-h-[250px] lg:min-h-0 flex flex-col">
           <ScratchPad clearTrigger={questionIndex} />
