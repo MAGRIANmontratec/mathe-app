@@ -449,7 +449,7 @@ const TASKS: Record<string, TaskDef> = {
     generate: () => { const a=rand(15,75), b=rand(15,95-a); return { a, b, op: '+', res: a+b, split: Math.floor(b/10)*10, split2: b%10 }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['op1', 'res1', 'start2', 'op2', 'res2', 'res'],
-    render: (d, i, _s, _f, _a, c) => (
+    render: (d, _i, _s, _f, _a, c) => (
       <div className="flex flex-col items-center">
         <h3 className="font-bold text-slate-500 mb-2">Rechne schrittweise</h3>
         <div className="bg-white p-2 border-2 rounded-xl shadow-inner grid grid-cols-5 gap-0 bg-slate-50 text-xl font-mono">
@@ -465,28 +465,28 @@ const TASKS: Record<string, TaskDef> = {
      generate: () => { const a=rand(35,95), b=rand(15,a-10); return { a, b, op: '-', res: a-b, split: Math.floor(b/10)*10, split2: b%10 }; },
      validate: (d, i) => parseInt(i['res']) === d.res,
      getFieldOrder: () => ['op1', 'res1', 'start2', 'op2', 'res2', 'res'],
-     render: (d, i, _s, _f, _a, c) => TASKS['addition'].render(d, i, _s, _f, _a, c)
+     render: (d, _i, _s, _f, _a, c) => TASKS['addition'].render(d, _i, _s, _f, _a, c)
   },
   addition_1000: {
     id: 'addition_1000', category: 'calc', isMultiInput: true,
     generate: () => { const a=rand(100,750), b=rand(120,950-a); return { a, b, res: a+b }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['res'],
-    render: (d, i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} + {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
+    render: (d, _i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} + {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
   },
   subtraction_1000: {
     id: 'subtraction_1000', category: 'calc', isMultiInput: true,
     generate: () => { const a=rand(350,990), b=rand(120,a-100); return { a, b, res: a-b }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['res'],
-    render: (d, i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} - {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
+    render: (d, _i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} - {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
   },
   pyramid: {
       id: 'pyramid', category: 'calc', isMultiInput: true,
       generate: () => { const b1=rand(1,10), b2=rand(1,10), b3=rand(1,10); const m1=b1+b2, m2=b2+b3, top=m1+m2; return { stones: [b1,b2,b3,m1,m2,top], given: rand(0,1)===0 ? [1,1,1,0,0,0] : [1,0,1,1,0,0] }; },
       validate: (d, i) => d.stones.every((v:number,k:number) => d.given[k] || parseInt(i[`stone-${k}`]) === v),
       getFieldOrder: (d) => d.stones.map((_:any,k:number)=>!d.given[k]?`stone-${k}`:null).filter(Boolean) as string[],
-      render: (d, i, _s, _f, _a, c) => (
+      render: (d, _i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center gap-1 mt-4">
               <div className="flex justify-center">{c('stone-5', d.stones[5], d.given[5], undefined, "w-20 h-14 border-2 rounded-lg")}</div>
               <div className="flex justify-center gap-1">{c('stone-3', d.stones[3], d.given[3], undefined, "w-20 h-14 border-2 rounded-lg")}{c('stone-4', d.stones[4], d.given[4], undefined, "w-20 h-14 border-2 rounded-lg")}</div>
@@ -554,7 +554,7 @@ const TASKS: Record<string, TaskDef> = {
       id: 'calc_wheel', category: 'calc', isMultiInput: true,
       generate: () => { const op=rand(0,1)===0?'+':(rand(0,1)===0?'-':'·'); const c=rand(2,9); const segs=[]; for(let i=0;i<4;i++) segs.push({inner:rand(2,9), outer: op==='+'?c+rand(2,9):op==='-'?c-rand(1,c-1):c*rand(2,9)}); return { center:c, op, segments:segs }; },
       validate: (d, i) => d.segments.every((v:any,k:number)=> parseInt(i[`w-${k}`]) === (d.op==='+'?d.center+v.inner:d.op==='-'?d.center-v.inner:d.center*v.inner)),
-      getFieldOrder: (d) => [0,1,2,3].map(k=>`w-${k}`),
+      getFieldOrder: (_d) => [0,1,2,3].map(k=>`w-${k}`),
       render: (d, i, _s, _f, _a, c) => (
           <div className="relative w-64 h-64 mx-auto flex items-center justify-center">
              <div className="absolute z-10 w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center font-bold border-4 border-rose-300">{d.op}{d.center}</div>
