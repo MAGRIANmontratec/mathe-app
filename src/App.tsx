@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, ReactNode } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import {
   Star, ArrowRight, ArrowLeft, ArrowDown, ArrowUp, CheckCircle, Trophy, Home, History, Zap, LayoutGrid, Pyramid, ShoppingBag, ListOrdered, GripHorizontal, AlignCenterHorizontal, GitCommitHorizontal, TrendingUp, Box, Users, BookOpen, Layers, Triangle, CircleDashed, Volume2, VolumeX, Target, Calculator, Trash2, Map, HelpCircle, PenTool, AlertTriangle, Sparkles
 } from "lucide-react";
@@ -233,7 +234,7 @@ const TASKS: Record<string, TaskDef> = {
           fields.push('rh');
           return fields;
       },
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center">
               <h3 className="font-bold text-slate-500 mb-4">Schriftliche Addition</h3>
               <div className="bg-white p-4 border-2 rounded-xl shadow-inner grid grid-cols-4 gap-1 text-2xl font-mono text-center items-center">
@@ -281,7 +282,7 @@ const TASKS: Record<string, TaskDef> = {
           return d.hidden.every((h:number) => parseInt(i[`gap-${h}`]||'0') === digits[h]);
       },
       getFieldOrder: (d) => d.hidden.map((h:number) => `gap-${h}`),
-      render: (d, i, s, f, a, c) => {
+      render: (d, i, _s, _f, _a, c) => {
           const digits = [ Math.floor(d.a/100), Math.floor((d.a%100)/10), d.a%10, Math.floor(d.b/100), Math.floor((d.b%100)/10), d.b%10, Math.floor(d.res/100), Math.floor((d.res%100)/10), d.res%10 ];
           const isH = (idx:number) => d.hidden.includes(idx);
           const rD = (idx:number) => isH(idx) ? c(`gap-${idx}`, i[`gap-${idx}`], false, '', 'w-12 h-12 bg-yellow-50') : <div className="p-2 w-12 h-12 flex items-center justify-center">{digits[idx]||(idx===0||idx===3?'':'0')}</div>;
@@ -397,7 +398,7 @@ const TASKS: Record<string, TaskDef> = {
           fields.push('rh');
           return fields;
       },
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center">
               <h3 className="font-bold text-slate-500 mb-4 text-center">Finde den Fehler und rechne richtig!</h3>
               <div className="flex flex-col sm:flex-row gap-4 items-center">
@@ -448,7 +449,7 @@ const TASKS: Record<string, TaskDef> = {
     generate: () => { const a=rand(15,75), b=rand(15,95-a); return { a, b, op: '+', res: a+b, split: Math.floor(b/10)*10, split2: b%10 }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['op1', 'res1', 'start2', 'op2', 'res2', 'res'],
-    render: (d, i, s, f, a, c) => (
+    render: (d, i, _s, _f, _a, c) => (
       <div className="flex flex-col items-center">
         <h3 className="font-bold text-slate-500 mb-2">Rechne schrittweise</h3>
         <div className="bg-white p-2 border-2 rounded-xl shadow-inner grid grid-cols-5 gap-0 bg-slate-50 text-xl font-mono">
@@ -464,28 +465,28 @@ const TASKS: Record<string, TaskDef> = {
      generate: () => { const a=rand(35,95), b=rand(15,a-10); return { a, b, op: '-', res: a-b, split: Math.floor(b/10)*10, split2: b%10 }; },
      validate: (d, i) => parseInt(i['res']) === d.res,
      getFieldOrder: () => ['op1', 'res1', 'start2', 'op2', 'res2', 'res'],
-     render: (d, i, s, f, a, c) => TASKS['addition'].render(d, i, s, f, a, c)
+     render: (d, i, _s, _f, _a, c) => TASKS['addition'].render(d, i, _s, _f, _a, c)
   },
   addition_1000: {
     id: 'addition_1000', category: 'calc', isMultiInput: true,
     generate: () => { const a=rand(100,750), b=rand(120,950-a); return { a, b, res: a+b }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['res'],
-    render: (d, i, s, f, a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} + {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
+    render: (d, i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} + {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
   },
   subtraction_1000: {
     id: 'subtraction_1000', category: 'calc', isMultiInput: true,
     generate: () => { const a=rand(350,990), b=rand(120,a-100); return { a, b, res: a-b }; },
     validate: (d, i) => parseInt(i['res']) === d.res,
     getFieldOrder: () => ['res'],
-    render: (d, i, s, f, a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} - {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
+    render: (d, i, _s, _f, _a, c) => <div className="text-center text-4xl font-black text-slate-800 flex gap-4 items-center justify-center">{d.a} - {d.b} = {c('res', d.res, false, '', 'w-32 h-16 text-3xl')}</div>
   },
   pyramid: {
       id: 'pyramid', category: 'calc', isMultiInput: true,
       generate: () => { const b1=rand(1,10), b2=rand(1,10), b3=rand(1,10); const m1=b1+b2, m2=b2+b3, top=m1+m2; return { stones: [b1,b2,b3,m1,m2,top], given: rand(0,1)===0 ? [1,1,1,0,0,0] : [1,0,1,1,0,0] }; },
       validate: (d, i) => d.stones.every((v:number,k:number) => d.given[k] || parseInt(i[`stone-${k}`]) === v),
       getFieldOrder: (d) => d.stones.map((_:any,k:number)=>!d.given[k]?`stone-${k}`:null).filter(Boolean) as string[],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center gap-1 mt-4">
               <div className="flex justify-center">{c('stone-5', d.stones[5], d.given[5], undefined, "w-20 h-14 border-2 rounded-lg")}</div>
               <div className="flex justify-center gap-1">{c('stone-3', d.stones[3], d.given[3], undefined, "w-20 h-14 border-2 rounded-lg")}{c('stone-4', d.stones[4], d.given[4], undefined, "w-20 h-14 border-2 rounded-lg")}</div>
@@ -498,7 +499,7 @@ const TASKS: Record<string, TaskDef> = {
       generate: () => { const isPlus=rand(0,1)===1; const base=rand(20,70); const ops=[rand(2,9), rand(10,15), rand(20,25)]; return { base, ops, isPlus }; },
       validate: (d, i) => d.ops.every((op:number, idx:number) => parseInt(i[`res-${idx}`]) === (d.isPlus ? d.base+op : d.base-op)),
       getFieldOrder: (d) => d.ops.map((_:any,idx:number)=>`res-${idx}`),
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center mt-4 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
              <div className="flex gap-2 mb-2">
                  <div className="w-16 h-12 flex items-center justify-center font-bold text-slate-500 bg-slate-100 rounded-lg">{d.isPlus?'+':'-'} {d.base}</div>
@@ -506,7 +507,7 @@ const TASKS: Record<string, TaskDef> = {
              </div>
              <div className="flex gap-2">
                  <div className="w-16 h-14 flex items-center justify-center font-bold text-2xl text-slate-400">=</div>
-                 {d.ops.map((op:number, idx:number) => c(`res-${idx}`, i[`res-${idx}`], false, undefined, "w-16 h-14 border-2 rounded-lg"))}
+                 {d.ops.map((_op:number, idx:number) => c(`res-${idx}`, i[`res-${idx}`], false, undefined, "w-16 h-14 border-2 rounded-lg"))}
              </div>
           </div>
       )
@@ -514,9 +515,9 @@ const TASKS: Record<string, TaskDef> = {
   fact_family: {
       id: 'fact_family', category: 'calc', isMultiInput: true,
       generate: () => { const a=rand(2,9), b=rand(2,9), prod=a*b; return { a, b, prod }; },
-      validate: (d, i) => true, 
+      validate: (_d, _i) => true, 
       getFieldOrder: () => [],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col gap-2">
              <div className="text-center font-bold mb-2">Zahlen: {d.a}, {d.b}, {d.prod}</div>
              <div className="grid grid-cols-1 gap-2">
@@ -530,7 +531,7 @@ const TASKS: Record<string, TaskDef> = {
       generate: () => { const t=rand(2,9), l=rand(2,9), r=rand(2,9); return { t, l, r }; },
       validate: (d, i) => parseInt(i['pl']) === d.t*d.l && parseInt(i['pr']) === d.t*d.r && parseInt(i['pb']) === d.l*d.r,
       getFieldOrder: () => ['pl', 'pr', 'pb'],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
          <div className="relative w-64 h-56 mt-4 mx-auto">
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 180"><polygon points="100,20 20,160 180,160" fill="none" stroke="#cbd5e1" strokeWidth="3" /></svg>
             <div className="absolute top-0 left-1/2 -translate-x-1/2">{c('t', d.t, true, undefined, "w-12 h-12 rounded-full border-2")}</div>
@@ -547,14 +548,14 @@ const TASKS: Record<string, TaskDef> = {
       generate: () => { const t=rand(10,50), l=rand(10,50), r=rand(10,50); return { t, l, r }; },
       validate: (d, i) => parseInt(i['pl']) === d.t+d.l && parseInt(i['pr']) === d.t+d.r && parseInt(i['pb']) === d.l+d.r,
       getFieldOrder: () => ['pl', 'pr', 'pb'],
-      render: (d, i, s, f, a, c) => TASKS['triangle'].render(d, i, s, f, a, c) 
+      render: (d, i, _s, _f, _a, c) => TASKS['triangle'].render(d, i, _s, _f, _a, c) 
   },
   calc_wheel: {
       id: 'calc_wheel', category: 'calc', isMultiInput: true,
       generate: () => { const op=rand(0,1)===0?'+':(rand(0,1)===0?'-':'·'); const c=rand(2,9); const segs=[]; for(let i=0;i<4;i++) segs.push({inner:rand(2,9), outer: op==='+'?c+rand(2,9):op==='-'?c-rand(1,c-1):c*rand(2,9)}); return { center:c, op, segments:segs }; },
       validate: (d, i) => d.segments.every((v:any,k:number)=> parseInt(i[`w-${k}`]) === (d.op==='+'?d.center+v.inner:d.op==='-'?d.center-v.inner:d.center*v.inner)),
       getFieldOrder: (d) => [0,1,2,3].map(k=>`w-${k}`),
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="relative w-64 h-64 mx-auto flex items-center justify-center">
              <div className="absolute z-10 w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center font-bold border-4 border-rose-300">{d.op}{d.center}</div>
              {d.segments.map((v:any,k:number)=>{
@@ -595,7 +596,7 @@ const TASKS: Record<string, TaskDef> = {
       },
       validate: (d, i) => d.grid.every((c: any, idx: number) => i[`lg-${idx}`] === c.n),
       getFieldOrder: () => [0,1,2,3,4,5,6,7,8].map(i => `lg-${i}`),
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center w-full max-w-2xl px-2">
               <h3 className="font-bold text-slate-500 mb-4">Wo liegen die Farben im 3x3 Gitter?</h3>
               <div className="flex flex-col sm:flex-row gap-6 w-full items-start justify-center">
@@ -636,7 +637,7 @@ const TASKS: Record<string, TaskDef> = {
     },
     validate: (d, i) => d.shape.every((cell:any, idx:number) => d.given[idx] || parseInt(i[`gc-${idx}`]) === d.start + (cell.y * 10) + cell.x),
     getFieldOrder: (d) => d.shape.map((_:any, idx:number) => !d.given[idx] ? `gc-${idx}` : null).filter(Boolean) as string[],
-    render: (d, i, s, f, a, c) => (
+    render: (d, _i, _s, _f, _a, c) => (
         <div className="relative w-64 h-64 mx-auto">
             {d.shape.map((cell:any, idx:number) => (
                 <div key={idx} className="absolute" style={{left: cell.x*60, top: cell.y*60}}>
@@ -659,7 +660,7 @@ const TASKS: Record<string, TaskDef> = {
       },
       validate: (d, i) => parseInt(i['res']) === d.res,
       getFieldOrder: () => ['res'],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center gap-4">
               <div className="text-3xl font-bold text-slate-700">{d.start}</div>
               <div className="flex gap-2 text-slate-500 bg-slate-100 p-2 rounded-xl">
@@ -682,7 +683,7 @@ const TASKS: Record<string, TaskDef> = {
       },
       validate: (d, i) => parseInt(i['res']) === d.res,
       getFieldOrder: () => ['res'],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center gap-4">
               <div className="text-lg font-bold text-slate-400">Überschlage:</div>
               <div className="text-3xl font-bold text-slate-700">{d.a} + {d.b}</div>
@@ -705,7 +706,7 @@ const TASKS: Record<string, TaskDef> = {
       generate: () => { const c=rand(123,888); return { c, nhl: Math.floor(c/100)*100, nzl: Math.floor(c/10)*10, nhr: Math.floor(c/100)*100+100, nzr: Math.floor(c/10)*10+10 }; },
       validate: (d, i) => parseInt(i['nhl'])===d.nhl && parseInt(i['nzl'])===d.nzl && parseInt(i['v'])===d.c-1 && parseInt(i['n'])===d.c+1 && parseInt(i['nzr'])===d.nzr && parseInt(i['nhr'])===d.nhr,
       getFieldOrder: () => ['nhl', 'nzl', 'v', 'n', 'nzr', 'nhr'],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col w-full items-center">
              <div className="flex items-end gap-1 overflow-x-auto p-2 w-full justify-center">
                  {c('nhl', i['nhl'], false, 'NH')} {c('nzl', i['nzl'], false, 'NZ')} {c('v', i['v'], false, 'V')}
@@ -719,15 +720,15 @@ const TASKS: Record<string, TaskDef> = {
       id: 'sequences', category: 'space', isMultiInput: true,
       generate: () => { const step=rand(2,8); const start=rand(10,80); return { nums: [0,1,2,3,4].map(k=>start+k*step), given: [1,0,0,0,1] }; },
       validate: (d, i) => d.nums.every((v:number,k:number)=> d.given[k] || parseInt(i[`seq-${k}`])===v),
-      getFieldOrder: (d) => [1,2,3].map(k=>`seq-${k}`),
-      render: (d, i, s, f, a, c) => <div className="flex flex-wrap justify-center gap-2 mt-6">{d.nums.map((v:number,k:number)=>c(`seq-${k}`, v, d.given[k]))}</div>
+      getFieldOrder: (_d) => [1,2,3].map(k=>`seq-${k}`),
+      render: (d, _i, _s, _f, _a, c) => <div className="flex flex-wrap justify-center gap-2 mt-6">{d.nums.map((v:number,k:number)=>c(`seq-${k}`, v, d.given[k]))}</div>
   },
   chain: {
       id: 'chain', category: 'space', isMultiInput: true,
       generate: () => { const start=rand(10,50); const ops=[2,5,10,-5]; let cur=start; const chain=[start]; ops.forEach(o=>{cur+=o; chain.push(cur);}); return { start, ops, chain }; },
       validate: (d, i) => d.chain.every((v:number,k:number) => k===0 || parseInt(i[`c-${k}`]) === v),
-      getFieldOrder: (d) => [1,2,3,4].map(k=>`c-${k}`),
-      render: (d, i, s, f, a, c) => (
+      getFieldOrder: (_d) => [1,2,3,4].map(k=>`c-${k}`),
+      render: (d, _i, _s, _f, _a, c) => (
           <div className="flex flex-wrap justify-center items-center gap-1">
              {d.chain.map((v:number, k:number) => (
                  <React.Fragment key={k}>
@@ -784,7 +785,7 @@ const TASKS: Record<string, TaskDef> = {
       },
       validate: (d, i) => Math.round(parseFloat((i['shop-total']||'0').replace(',','.'))*100) === d.total && Math.round(parseFloat((i['shop-change']||'0').replace(',','.'))*100) === d.change,
       getFieldOrder: () => ['shop-total', 'shop-change'],
-      render: (d, i, s, f, a, c) => (
+      render: (d, i, _s, _f, _a, c) => (
           <div className="flex flex-col items-center gap-6 mt-4 w-full">
              <div className="flex gap-4">{d.items.map((it:any,idx:number)=><div key={idx} className="flex flex-col items-center bg-white p-2 rounded-xl shadow border"><div className="text-3xl">{it.i}</div><div className="font-bold text-slate-700">{it.n}</div><div className="text-slate-500">{(it.p/100).toFixed(2).replace('.',',')}€</div></div>)}</div>
              <div className="w-full bg-slate-50 p-3 rounded-xl border flex flex-col items-center">
@@ -968,7 +969,7 @@ export default function MatheTrainerApp() {
       const { def, data } = currentQuestion;
       if (def.isMultiInput && def.getFieldOrder) {
           const fields = def.getFieldOrder(data) || [];
-          const nextEmpty = fields.find(id => !multiInputs[id]);
+          const nextEmpty = fields.find((id: string) => !multiInputs[id]);
           if (nextEmpty) {
               setActiveCellId(nextEmpty);
               return;
@@ -1093,7 +1094,7 @@ export default function MatheTrainerApp() {
           <div className="flex justify-between items-center mb-6">
               <button onClick={() => setMode('menu')} className="bg-white p-3 rounded-xl shadow text-slate-500 hover:text-slate-700 transition-colors"><Home/></button>
               <div className="flex flex-col items-center">
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold text-white mb-1 ${taskDef?.color || 'bg-slate-500'}`}>{taskDef?.name}</div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold text-white mb-1 ${getModeInfo(mode)?.color || 'bg-slate-500'}`}>{getModeInfo(mode)?.name}</div>
                   <div className="text-xl font-black text-slate-700">{stats.q} <span className="text-slate-400">/ {QUESTIONS_PER_ROUND}</span></div>
               </div>
               <div className="flex gap-2">
